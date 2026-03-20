@@ -1,21 +1,13 @@
-# Sample Project – User Management API
+# Sample Project – Authentication & User Management
 
-This is a sample Python project that demonstrates a simple user management system.
+This is a sample project demonstrating user authentication and management functionality. It includes modules for user registration, login, password hashing, and user service operations.
 
-## Features
-- User registration with email and password
-- Password hashing using SHA256
-- Simple user lookup
+The project uses SQLite for data persistence and implements secure password hashing using SHA-256. It serves as a reference implementation for building secure authentication systems in Python applications.
 
-## Files
-- `auth.py` – Contains authentication logic.
-- `user_service.py` – Handles user operations.
+## Key Components
 
-## Usage
-```python
-from auth import hash_password, verify_password
-from user_service import create_user, get_user
+- **Authentication Module** (`auth.py`) – Handles login and logout operations
+- **User Service Module** (`user_service.py`) – Manages user creation, retrieval, and password operations
+- **Database** – SQLite-based persistence layer for user data
 
-create_user("alice@example.com", "secret")
-user = get_user("alice@example.com")
-print(user)
+This codebase is designed to be easily integrated into larger applications requiring user management capabilities.
