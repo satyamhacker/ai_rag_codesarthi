@@ -1,349 +1,355 @@
----
-
-## 🧩 **PROJECT: CODESARTHI – THE ALL-KNOWING CODEBASE ASSISTANT**
-
-### 🎯 **What is it?**  
-Ek AI-powered tool jo tumhare code repository ki documentation, code comments, READMEs, aur internal design notes ko ingest karta hai. Phir developers (ya naye joiners) usse natural language me sawaal puch sakte hain – jaise *“How does the authentication flow work?”* ya *“What is the purpose of the `user_service` module?”* – aur wo context‑aware, accurate jawab deta hai, aur pichli baaton ko yaad rakh sakta hai (conversation memory).
-
-### 🧠 **What problem does it solve?**  
-- **Onboarding time kam karna:** Naye developer ko codebase samjhne me hafte lagte hain. CodeSarthi usse minutes me relevant chunks de sakta hai.  
-- **Documentation overhead:** Teams documentation likhna bhool jaati hain. CodeSarthi existing comments aur code structure se hi answers nikal leta hai.  
-- **Context switching:** Jab ek developer multiple projects handle karta hai, to har baar doosre project ka flow yaad karne me time lagta hai. Assistant yaad rakhta hai.  
-- **Knowledge silos:** Kisi ek senior ke dimaag me jo knowledge hai, wo assistant me store ho jata hai – reproducible.
-
-### 💡 **Why it's great?**  
-- **Real‑world use:** Har software company ke liye ye tool immediately useful hai.  
-- **Covers all LangChain modules:** Document loaders (code files), splitters (chunking code comments), embeddings (code semantics), memory (conversation), streaming UI (ChatGPT‑like), observability.  
-- **Extensible:** Aage jaake unit tests generate karna, code review assist, ya even PR descriptions likhna – sab is foundation par bana sakte ho.
 
 ---
 
-## 🗺️ **Mission Flow (Index)**
-1. **Mission 0: Base Camp Setup**  
-   - Virtual Env, LangChain, Ollama  
-2. **Mission 1: Local LLM – Pehla Code Sawaal**  
-   - Model test, LangSmith tracing  
-3. **Mission 2: Prompt & Chain – Technical Sawaal Banana**  
-   - Prompt templates, pipe operator, output parser  
-4. **Mission 3: Memory – Conversation Thread**  
-   - Session ID, RunnableWithMessageHistory, SQLite  
-5. **Mission 4: Data Ingest – Code Repository Ko Samajhna**  
-   - Loaders (README, Markdown, code comments), chunking, embeddings, Chroma  
-6. **Mission 5: Retrieval – Codebase Ki File**  
-   - Retriever, similarity search, manual RAG, RetrievalQA  
-7. **Mission 6: UI – Developer Dashboard**  
-   - Streamlit login (user), session state, chat history, streaming, reset  
-8. **Mission 7: Final Integration – CodeSarthi Zinda Hai**  
-   - RAG + Memory + UI + Multi‑user + Observability  
+## 🧩 **Module 1: Base Camp Setup – Apna Kitchen Taiyar Kar**  
+*(Steps 1–3 from roadmap)*
+
+**Level 1.1: Virtual Environment – Alag Kitchen**
+
+1. **Task:** Folder `codesarthi/` banao. Usme virtual environment `venv` create karo aur activate karo.  
+2. **Logic:** Python projects ke liye isolation zaroori hai – dependencies clash na karein.  
+3. **Definition of Done:** Terminal prompt me `(venv)` dikhe.
+
+**Level 1.2: Dependencies – LangChain, Streamlit, aur Saathi**
+
+1. **Task:** `requirements.txt` file banao aur usme saari libraries likho: `langchain`, `langchain-community`, `langchain-chroma`, `langchain-ollama`, `python-dotenv`, `streamlit`, `pypdf`, `unstructured`, `chromadb`. Phir `pip install -r requirements.txt` chalao.  
+2. **Logic:** Modular installs keep environment light. `langchain-ollama` specifically Ollama integration ke liye chahiye.  
+3. **Definition of Done:** `pip list` mein saari packages dikhein.
+
+**Level 1.3: Ollama – Local LLM Ka Engine**
+
+1. **Task:** Ollama install karo, background service start karo (`ollama serve`). `ollama pull mistral:7b` chalao. Terminal mein `ollama run mistral:7b` se test karo: "What is a Python decorator?".  
+2. **Logic:** Ollama runs the LLM locally – no cloud dependency.  
+3. **Definition of Done:** Model answer de.
+
+**Level 1.4: .gitignore – Sensitive Files Ko Chhupao**
+
+1. **Task:** `.gitignore` file banao aur inhe add karo: `venv/`, `.env`, `chroma_code/`, `users.db`, `code_history.db`, `__pycache__/`, `*.pyc`.  
+2. **Logic:** Ye files ya toh sensitive hain (`.env`, `users.db`) ya locally generate hoti hain – inhe repo mein nahi rakhna chahiye.  
+3. **Definition of Done:** `git status` mein ye files ignored dikhein.
+
+**Level 1.5: LangSmith – CCTV Lagao (Optional)**
+
+1. **Task:** `.env` file banao. Usme `LANGCHAIN_TRACING_V2=true`, `LANGCHAIN_ENDPOINT`, `LANGCHAIN_API_KEY`, `LANGCHAIN_PROJECT=codesarthi` daalo.  
+2. **Logic:** Har LLM call trace hoti hai – debugging aasan.  
+3. **Definition of Done:** Baad mein `app.py` run karne par LangSmith dashboard pe traces dikhe.
+
+**🔥 COMBO TASK (Level 1.6):**  
+1. **Task:** Ek chhota Python script (e.g., `test_env.py`) banao jo `ChatOllama` import kare, `mistral:7b` se invoke kare "What is a unit test?", aur response print kare. Script run karo.  
+2. **Logic:** Sab components ek saath kaam kar rahe hain ya nahi verify karo.  
+3. **Definition of Done:** Terminal pe answer aaye; LangSmith trace dikhe (agar setup kiya).
+
+**Practical Takeaway:**  
+- Keywords: `virtual environment`, `pip install`, `ollama serve`, `ollama pull`, `.gitignore`, `.env`, `LANGCHAIN_TRACING_V2`.  
+- Why: Ye foundation hai – bina iske kuch bhi nahi chalega.
 
 ---
 
-## 🚀 **Mission 0: Base Camp Setup**  
-*(Covers Module 1)*
+## 🧩 **Module 2: User Authentication – Har User Ka Apna Kamra**  
+*(Steps 4–5 from roadmap)*
 
-**Level 0.1: Apna Kitchen Taiyar Kar**  
-1. **Task:** Folder `codesarthi/` banao. Uske andar virtual environment `venv` create karo aur activate karo.  
-2. **Logic:** Isolate dependencies – codebase ingestion tools won’t clash with system Python.  
-3. **Definition of Done:** Terminal prompt shows `(venv)`.  
-4. **Practical Takeaway:** Keywords: `python -m venv venv`, `source venv/bin/activate` (or `venv\Scripts\activate`). Virtual env ensures every project has its own clean space.
+**Level 2.1: Sample Data Taiyar Kar**
 
-**Level 0.2: Ollama – Code Samajhne Wala Dimag**  
-1. **Task:** Ollama daemon start karo (agar already running nahi hai). `ollama pull mistral:7b` run karo. Phir terminal me `ollama run mistral:7b` se test karo “What is a Python decorator?”.  
-2. **Logic:** Ollama runs the LLM locally – no codebase leaves your machine.  
-3. **Definition of Done:** You get a decent explanation from the model in the terminal.  
-4. **Practical Takeaway:** Keywords: `ollama serve`, `ollama pull`, `ollama run`. The model must be downloaded and running before LangChain can use it.
+1. **Task:** `repo/` folder banao. Usme teen files daalo:  
+   - `README.md` – kuch bhi 1-2 paragraph (project overview)  
+   - `auth.py` – Python file jisme login/logout functions ke comments aur docstrings hon  
+   - `user_service.py` – user create, fetch, password hash ke functions  
+   - `pdf_file/` folder banao aur usme `mysql_cheatsheet.pdf` daalo (MySQL commands ka reference guide)  
+2. **Logic:** Yehi files assistant ki "knowledge" banegi – code files se code questions, PDF se MySQL questions.  
+3. **Definition of Done:** `repo/` mein 3 files aur `pdf_file/` mein `mysql_cheatsheet.pdf`.
 
-**Level 0.3: LangChain + Friends Install**  
-1. **Task:** Activate venv. Install: `langchain`, `langchain-community`, `langchain-chroma`, `python-dotenv`, `streamlit`, `pypdf`, `unstructured`.  
-2. **Logic:** Modular installs keep dependencies light; `unstructured` helps parse code files.  
-3. **Definition of Done:** `pip list` shows all these packages.  
-4. **Practical Takeaway:** Keywords: `pip install`. LangChain is modular; install only what you need.
+**Level 2.2: Auth DB – SQLite Mein Users**
 
-**Level 0.4: LangSmith – Developer Dashboard**  
-1. **Task:** `.env` file banao. Add:  
-   ```
-   LANGCHAIN_TRACING_V2=true
-   LANGCHAIN_ENDPOINT=https://api.smith.langchain.com
-   LANGCHAIN_API_KEY=ls__your_key_here
-   LANGCHAIN_PROJECT=codesarthi
-   ```  
-2. **Logic:** These environment variables automatically send traces to LangSmith.  
-3. **Definition of Done:** After any chain runs, you’ll see traces in dashboard under project “codesarthi”.  
-4. **Practical Takeaway:** Keywords: `LANGCHAIN_TRACING_V2`, `LANGCHAIN_API_KEY`. Tracing is key for debugging LLM apps.
+1. **Task:** `auth_db.py` file banao. Isme teen cheezein implement karo:  
+   - Database initialize karo – `users` table banao with `email`, `password` (hashed)  
+   - User register karo – password ko hash karo, insert karo  
+   - User verify karo – email aur password check karo, match pe user ID return karo  
+2. **Logic:** SQLite local hai, passwords store mat karo plain mein.  
+3. **Definition of Done:** Script run karo, ek test user register karo, login verify karo – `users.db` file ban jaaye.
 
-**🔥 COMBO TASK (Level 0.5):**  
-1. **Task:** Inside venv, write `test_env.py` that imports `ChatOllama` from `langchain_community.chat_models`, creates `llm = ChatOllama(model="mistral:7b")`, invokes `llm.invoke("What is a unit test?")`, prints response. Run the script.  
-2. **Logic:** Combines environment setup, Ollama connection, and LangSmith tracing.  
-3. **Definition of Done:** Terminal prints answer; LangSmith dashboard shows a trace with the prompt and output.  
-4. **Practical Takeaway:** You now have a working local LLM with full observability.
+**🔥 COMBO TASK (Level 2.3):**  
+1. **Task:** `auth_db.py` ke functions ko use karke ek quick test script likho. Register a user, then try to login with correct and wrong password. Print messages for each.  
+2. **Logic:** Verify that hashing and DB operations work.  
+3. **Definition of Done:** Correct password pe success message, wrong pe failure.
+
+**Practical Takeaway:**  
+- Keywords: `sqlite3`, `hashlib.sha256`, `INSERT`, `SELECT`.  
+- Why: Multi‑user support ke liye user isolation zaroori hai.
 
 ---
 
-## 🚀 **Mission 1: Local LLM – Pehla Code Sawaal**  
-*(Covers Module 1 invoke & Module 2 basics)*
+## 🧩 **Module 3: Data Ingestion – Codebase Ko Samajhna**  
+*(Step 6 from roadmap)*
 
-**Level 1.1: LangChain Se Pehla Sawaal**  
-1. **Task:** Create script `first_code_chat.py`. Use `ChatOllama` with `mistral:7b`. Invoke `llm.invoke("What is dependency injection in programming?")`. Print response.  
-2. **Logic:** `.invoke()` sends the prompt; the model returns an `AIMessage`.  
-3. **Definition of Done:** Terminal prints a technical answer.  
-4. **Practical Takeaway:** Keywords: `ChatOllama`, `.invoke()`. First step to talk to LLM programmatically.
+**Level 3.1: Files Load Karo**
 
-**Level 1.2: Metadata Dekh – Token Ka Bill**  
-1. **Task:** Store response in variable. Print `response.content` and `response.usage_metadata`.  
-2. **Logic:** `AIMessage` holds both text and token counts.  
-3. **Definition of Done:** You see input/output token numbers printed.  
-4. **Practical Takeaway:** Keywords: `content`, `usage_metadata`. Tracking tokens helps optimise prompts and costs.
+1. **Task:** `ingest.py` banao. Pehle `repo/` aur `pdf_file/` se sab files load karo:  
+   - Markdown files ke liye `DirectoryLoader` with `glob="**/*.md"`  
+   - Python files ke liye `DirectoryLoader` with `glob="**/*.py"`  
+   - PDF files ke liye `PyPDFLoader` – path: `pdf_file/mysql_cheatsheet.pdf`  
+   - Saari files ek list mein collect karo.  
+2. **Logic:** Different loaders for different file types.  
+3. **Definition of Done:** Print total documents loaded – count should match files.
 
-**Level 1.3: LangSmith Trace – Code Review Slip**  
-1. **Task:** Re‑run the script. Go to LangSmith dashboard, find the trace for this run. Click to see the exact prompt sent and the output.  
-2. **Logic:** LangSmith records every LLM call with full input/output.  
-3. **Definition of Done:** You can see the exact conversation in the trace.  
-4. **Practical Takeaway:** Observability is your best friend when debugging LLM behaviour.
+**Level 3.2: Chunks Banao**
 
-**🔥 COMBO TASK (Level 1.4):**  
-1. **Task:** Modify script to ask two technical questions: “What is SOLID?” and “Explain the Single Responsibility Principle”. Print both answers. Run the script and check LangSmith for two separate traces.  
-2. **Logic:** Each `invoke` creates a separate trace.  
-3. **Definition of Done:** Both answers printed; LangSmith shows two distinct traces.  
-4. **Practical Takeaway:** You now understand how to invoke multiple independent queries and trace them.
+1. **Task:** `RecursiveCharacterTextSplitter` use karo with `chunk_size=1500`, `chunk_overlap=200`. Saari documents ko split karo.  
+2. **Logic:** Overlap ensures context continuity.  
+3. **Definition of Done:** Number of chunks > original document count.
 
----
+**Level 3.3: Embeddings Banao**
 
-## 🚀 **Mission 2: Prompt & Chain – Technical Sawaal Banana**  
-*(Covers Module 2)*
+1. **Task:** `OllamaEmbeddings` with `mistral:7b` instantiate karo. Ek sample chunk ka vector generate karo aur length print karo.  
+2. **Logic:** Embeddings capture code semantics.  
+3. **Definition of Done:** Vector length constant (e.g., 3072).  
 
-**Level 2.1: Template – Senior Dev Ka Frame**  
-1. **Task:** Create a `ChatPromptTemplate` using `from_messages` with a system message: “You are a senior software engineer, explaining code concepts clearly.” and a human message with variable `{query}`. Print the template’s `input_variables`.  
-2. **Logic:** Variables allow reuse.  
-3. **Definition of Done:** `input_variables` shows `['query']`.  
-4. **Practical Takeaway:** Keywords: `ChatPromptTemplate.from_messages`. Prompt templates make queries consistent.
+**Level 3.4: Chroma DB Mein Save Karo**
 
-**Level 2.2: Chain – Assembly Line**  
-1. **Task:** Chain the template, the LLM, and `StrOutputParser` using `|`. Print the type of the chain.  
-2. **Logic:** Pipe operator creates a `RunnableSequence`.  
-3. **Definition of Done:** The chain object is a `RunnableSequence`.  
-4. **Practical Takeaway:** Keywords: `|` operator, `RunnableSequence`. LCEL enables modular pipelines.
-
-**Level 2.3: Invoke – Concept Explanation**  
-1. **Task:** Invoke the chain with `{"query": "Explain the Factory pattern"}`. Print the result.  
-2. **Logic:** Parser extracts only the text from the LLM’s output.  
-3. **Definition of Done:** Clean text output (no metadata).  
-4. **Practical Takeaway:** Keywords: `StrOutputParser`. It’s essential to get plain text from the LLM.
-
-**🔥 COMBO TASK (Level 2.4):**  
-1. **Task:** Create another template with two variables: `{concept}` and `{language}`. Build a chain that asks “Explain {concept} in the context of {language}”. Test with different values.  
-2. **Logic:** Multiple variables make prompts dynamic.  
-3. **Definition of Done:** Chain runs without errors; output changes with language.  
-4. **Practical Takeaway:** You now can build reusable, parameterised prompts for different scenarios.
-
----
-
-## 🚀 **Mission 3: Memory – Conversation Thread**  
-*(Covers Module 3)*
-
-**Level 3.1: Session ID – Developer Session**  
-1. **Task:** In your script, define `session_id = "dev_123"`.  
-2. **Logic:** This ID identifies a conversation thread.  
-3. **Definition of Done:** Variable defined.  
-4. **Practical Takeaway:** Keywords: session_id. You’ll use this to isolate conversations.
-
-**Level 3.2: History Wrapper – Yaad Rakhega**  
-1. **Task:** Write a `get_session_history(session_id: str)` function that returns a `SQLChatMessageHistory` with `connection_string="sqlite:///code_history.db"`. Wrap your chain with `RunnableWithMessageHistory`.  
-2. **Logic:** SQLite stores messages permanently.  
-3. **Definition of Done:** After running, a file `code_history.db` appears.  
-4. **Practical Takeaway:** Keywords: `SQLChatMessageHistory`, `RunnableWithMessageHistory`. Memory survives script restarts.
-
-**Level 3.3: Multi‑Turn – Follow‑up Test**  
-1. **Task:** Ask “What is an interface?” then follow with “How is it different from an abstract class?” using the history‑aware chain.  
-2. **Logic:** The wrapper injects past messages automatically.  
-3. **Definition of Done:** Second answer references the first.  
-4. **Practical Takeaway:** The assistant now remembers context across turns.
-
-**Level 3.4: DB Inspection – Knowledge Base**  
-1. **Task:** Open `code_history.db` with an SQLite viewer (e.g., DB Browser). Find the `message_store` table. Verify messages for `session_id = dev_123`.  
-2. **Logic:** Data is persisted.  
-3. **Definition of Done:** You see the full conversation stored.  
-4. **Practical Takeaway:** You can inspect the stored conversation history directly.
+1. **Task:** `Chroma.from_documents` use karo – chunks, embeddings, `persist_directory="./chroma_code"`, collection name `"code_knowledge"`.  
+2. **Logic:** Vector store disk par persist hota hai.  
+3. **Definition of Done:** `chroma_code/` folder ban jaaye.
 
 **🔥 COMBO TASK (Level 3.5):**  
-1. **Task:** Start a conversation (2‑3 turns). Stop the script. Run again with the same `session_id`. Ask a new question – the LLM should remember the past. Check DB for new rows.  
-2. **Logic:** Persistence works across runs.  
-3. **Definition of Done:** Second run recalls earlier context; DB contains all messages.  
-4. **Practical Takeaway:** You now have a persistent, stateful chatbot for each developer.
+1. **Task:** Load the persisted DB back (using `Chroma` constructor), perform two similarity searches:  
+   - `"how does authentication work?"` – should return chunks from `auth.py`  
+   - `"how to use JOIN in MySQL?"` – should return chunks from `mysql_cheatsheet.pdf`  
+   Print top 3 chunks for each.  
+2. **Logic:** Verify that both code and PDF retrieval works.  
+3. **Definition of Done:** Retrieved chunks contain relevant content from respective sources.
+
+**Practical Takeaway:**  
+- Keywords: `DirectoryLoader`, `PyPDFLoader`, `RecursiveCharacterTextSplitter`, `OllamaEmbeddings`, `Chroma.from_documents`, `similarity_search`.  
+- Why: Without ingestion, assistant has no knowledge.
 
 ---
 
-## 🚀 **Mission 4: Data Ingest – Code Repository Ko Samajhna**  
-*(Covers Module 4, but with code files)*
+## 🧩 **Module 4: RAG Chain – Assistant Ka Brain**  
+*(Steps 8 from roadmap)*
 
-**Level 4.1: Loader – README, Markdown, Comments**  
-1. **Task:** Create a folder `repo/` with a few sample files: a README.md, a Python file with docstrings/comments, and a PDF doc. Use `DirectoryLoader` with `glob="**/*.md"` to load markdowns, `TextLoader` for `.py` files, and `PyPDFLoader` for PDFs. Collect all into a list of Documents.  
-2. **Logic:** Different loaders handle different file types.  
-3. **Definition of Done:** Print total documents – should count each file/page.  
-4. **Practical Takeaway:** Keywords: `DirectoryLoader`, `TextLoader`, `PyPDFLoader`. You can ingest a whole codebase.
+**Level 4.1: Vector DB Load Karo**
 
-**Level 4.2: Chunking – Code Block Ko Logical Unit**  
-1. **Task:** Use `RecursiveCharacterTextSplitter` with `chunk_size=1500`, `chunk_overlap=200`. Split all documents. Print number of chunks.  
-2. **Logic:** Overlap ensures context isn’t lost at boundaries.  
-3. **Definition of Done:** Number of chunks > original file count.  
-4. **Practical Takeaway:** Keywords: `RecursiveCharacterTextSplitter`. Chunking is crucial for search quality.
+1. **Task:** `app.py` mein (after login) Chroma DB load karo using `persist_directory="./chroma_code"` and same embedding model.  
+2. **Logic:** DB already built, just connect.  
+3. **Definition of Done:** DB object prints without error.
 
-**Level 4.3: Embedding – Code Semantics Ko Number Bana**  
-1. **Task:** Instantiate `OllamaEmbeddings` with `mistral:7b`. Test on a sample chunk: get its vector, print the length.  
-2. **Logic:** Embeddings capture code semantics.  
-3. **Definition of Done:** Vector length is constant (e.g., 3072).  
-4. **Practical Takeaway:** Keywords: `OllamaEmbeddings`. Local embeddings keep your code private.
+**Level 4.2: Retriever Banao**
 
-**Level 4.4: Vector Store – Chroma Code Library**  
-1. **Task:** Create Chroma database from all chunks using `Chroma.from_documents()`. Set `persist_directory="./chroma_code"` and collection name `"code_knowledge"`.  
-2. **Logic:** This stores vectors on disk.  
-3. **Definition of Done:** Folder `chroma_code` appears with database files.  
-4. **Practical Takeaway:** Keywords: `Chroma.from_documents`, `persist_directory`. You now have a searchable index of your codebase.
+1. **Task:** `.as_retriever(search_kwargs={"k": 3})` use karo.  
+2. **Logic:** Retriever top 3 most relevant chunks lega.  
+3. **Definition of Done:** Retriever object ban jaaye.
+
+**Level 4.3: LLM Connect Karo**
+
+1. **Task:** `Ollama` with model `mistral:7b` instantiate karo.  
+2. **Logic:** Local LLM engine.  
+3. **Definition of Done:** `llm.invoke("test")` works (optional test).
+
+**Level 4.4: RetrievalQA Chain Banao**
+
+1. **Task:** `RetrievalQA.from_chain_type(llm=llm, retriever=retriever, return_source_documents=True)` use karo.  
+2. **Logic:** This chain automatically retrieves context and generates answer.  
+3. **Definition of Done:** Chain object ready.
 
 **🔥 COMBO TASK (Level 4.5):**  
-1. **Task:** Load the created vector store back using `Chroma(persist_directory="./chroma_code", embedding_function=embeddings)`. Perform a similarity search with a query like “how to handle user authentication”. Print the top 3 chunks (their page_content).  
-2. **Logic:** Retrieval is now possible.  
-3. **Definition of Done:** Retrieved chunks contain relevant code snippets or comments.  
-4. **Practical Takeaway:** You’ve built a semantic search engine for your codebase.
+1. **Task:** Do hardcoded queries test karo:  
+   - `qa_chain.invoke({"query": "What does auth.py do?"})` – answer from `repo/auth.py`  
+   - `qa_chain.invoke({"query": "What is the syntax for SELECT in MySQL?"})` – answer from `pdf_file/mysql_cheatsheet.pdf`  
+   Print answer and source documents for both.  
+2. **Logic:** Verify RAG works for both code and PDF sources.  
+3. **Definition of Done:** Answers based on correct source files.
+
+**Practical Takeaway:**  
+- Keywords: `Chroma`, `as_retriever`, `RetrievalQA.from_chain_type`, `return_source_documents`.  
+- Why: RAG is the core of the assistant.
 
 ---
 
-## 🚀 **Mission 5: Retrieval – Codebase Ki File**  
-*(Covers Module 5)*
+## 🧩 **Module 5: Chat UI – Jadoo Ki Jhappi**  
+*(Steps 7, 9 from roadmap)*
 
-**Level 5.1: Retriever Interface**  
-1. **Task:** Convert the Chroma store to a retriever using `.as_retriever(search_type="similarity", search_kwargs={"k": 3})`. Print its config.  
-2. **Logic:** Retriever standardizes fetching.  
-3. **Definition of Done:** Retriever config shows `k=3`.  
-4. **Practical Takeaway:** Keywords: `as_retriever`. The retriever is a reusable component.
+**Level 5.1: Login + Signup Form**
 
-**Level 5.2: Manual RAG – Khud Ka Code Explanation**  
-1. **Task:** Write a function that takes a query, retrieves documents via retriever, joins their `page_content` with `\n\n`, builds a prompt: `"Use the codebase context to answer:\n{context}\nQuestion: {question}"`, and invokes the LLM chain. Return the answer.  
-2. **Logic:** You manually combine retrieval and generation.  
-3. **Definition of Done:** The answer is based on the retrieved code/documentation.  
-4. **Practical Takeaway:** You now understand the internal steps of RAG.
+1. **Task:** `app.py` mein Streamlit app start karo. Agar user logged in nahi hai, do tabs dikhao – **Login** aur **Sign Up**:  
+   - Login tab: email + password → `auth_db.py` ke verify function se check karo  
+   - Sign Up tab: email + password → `auth_db.py` ke register function se naya user banao  
+2. **Logic:** Session state tracks login. Naye users bina manual DB entry ke register ho sakein.  
+3. **Definition of Done:** Naya user signup kar sake, existing user login kar sake, "Welcome" message aaye.
 
-**Level 5.3: RetrievalQA – Automatic Code Assistant**  
-1. **Task:** Use `RetrievalQA.from_chain_type(llm=llm, retriever=retriever, return_source_documents=True)`. Test it with a query. Print the answer and the source documents.  
-2. **Logic:** This chain automates everything.  
-3. **Definition of Done:** Output dictionary contains `result` and `source_documents`.  
-4. **Practical Takeaway:** Keywords: `RetrievalQA.from_chain_type`, `return_source_documents`. You now have a one‑line RAG pipeline.
+**Level 5.2: Chat Interface**
+
+1. **Task:** Login ke baad `st.chat_input` use karo. User messages ko `st.session_state.messages` list mein store karo (role: user, content: text). Loop through list aur each message ko `st.chat_message` se display karo.  
+2. **Logic:** Builds the visual conversation.  
+3. **Definition of Done:** Type karo, message appear ho.
+
+**Level 5.3: RAG Integration**
+
+1. **Task:** Jab user message bheje, call the RetrievalQA chain with the user's query. Display the answer using `st.chat_message` (assistant role).  
+2. **Logic:** Assistant answers using codebase and PDF.  
+3. **Definition of Done:** "How do I use GROUP BY in MySQL?" puchho – answer from PDF aaye.
 
 **🔥 COMBO TASK (Level 5.4):**  
-1. **Task:** Compare manual chain and RetrievalQA chain on a complex query (e.g., “What is the purpose of the `auth` module?”). Print both answers and the source documents from RetrievalQA.  
-2. **Logic:** Both should give correct answers; source documents show origin.  
-3. **Definition of Done:** Both answers correct; source documents show the exact files/comments used.  
-4. **Practical Takeaway:** You now can choose between manual control and automatic speed.
+1. **Task:** Chat UI complete karo – signup/login, chat input, RAG answer display. Test with both a code question and a MySQL question.  
+2. **Logic:** Basic working chatbot.  
+3. **Definition of Done:** Answer appears, no errors.
+
+**Practical Takeaway:**  
+- Keywords: `st.session_state`, `st.chat_input`, `st.chat_message`, `st.form`, `st.tabs`.  
+- Why: UI makes the assistant usable.
 
 ---
 
-## 🚀 **Mission 6: UI – Developer Dashboard**  
-*(Covers Module 6)*
+## 🧩 **Module 6: Memory – Ghajini Se Genie Tak**  
+*(Step 10 from roadmap)*
 
-**Level 6.1: Login – Developer Profile**  
-1. **Task:** Build a Streamlit app (`ui.py`). Create a SQLite table for users (email, hashed password). Add login form with `st.text_input` and `st.form`. On successful login, set `st.session_state.logged_in = True` and `session_id = email + "_code"`.  
-2. **Logic:** Different developers have separate conversations.  
-3. **Definition of Done:** After login, page shows “Welcome”.  
-4. **Practical Takeaway:** Keywords: `st.session_state`, SQLite authentication. User isolation starts here.
+**Level 6.1: SQLite History Setup**
 
-**Level 6.2: Chat UI – ChatGPT Jaise**  
-1. **Task:** After login, display `st.chat_input`. Store messages in `st.session_state.messages` as list of dicts (`{"role": "user", "content": ...}` and similarly for assistant). Loop through the list and display each with `st.chat_message`.  
-2. **Logic:** This builds the visual conversation.  
-3. **Definition of Done:** You can type and see messages appear.  
-4. **Practical Takeaway:** Keywords: `st.chat_input`, `st.chat_message`. UI mimics ChatGPT.
+1. **Task:** `get_session_history` function banao jo `SQLChatMessageHistory` return kare with connection string `sqlite:///code_history.db`.  
+2. **Logic:** Messages will persist.  
+3. **Definition of Done:** File `code_history.db` create ho.
 
-**Level 6.3: RAG + Memory – Smart Code Assistant**  
-1. **Task:** In the chat loop, when a user sends a message, call the **RetrievalQA chain** (from Mission 5) with the user’s query. Wrap it with `RunnableWithMessageHistory` (using the session_id from login) to inject past conversation. Display the assistant’s answer using `st.chat_message`.  
-2. **Logic:** Combines codebase knowledge retrieval with memory.  
-3. **Definition of Done:** Bot answers from the codebase and remembers earlier questions.  
-4. **Practical Takeaway:** You’ve integrated the full RAG+Memory backend into the UI.
+**Level 6.2: History Wrapper Lagao**
 
-**Level 6.4: Streaming – Real‑time Response**  
-1. **Task:** Replace the static chain invocation with streaming. Use `chain.stream(...)` and iterate over chunks. Use `st.write_stream` inside the assistant’s chat message to render the stream.  
-2. **Logic:** Streaming reduces perceived wait.  
-3. **Definition of Done:** Answer appears word by word.  
-4. **Practical Takeaway:** Keywords: `st.write_stream`, `.stream()`. Streaming is essential for UX.
+1. **Task:** Apni RAG chain ko `RunnableWithMessageHistory` mein wrap karo. Pass `get_session_history`, `input_messages_key="query"`, `history_messages_key="history"`.  
+2. **Logic:** Wrapper automatically injects past messages.  
+3. **Definition of Done:** Chain object now stateful.
 
-**Level 6.5: Reset – Naya Session**  
-1. **Task:** Add a sidebar button “New Thread”. On click, clear `st.session_state.messages` and call `get_session_history(session_id).clear()` to wipe SQLite memory for that user.  
-2. **Logic:** UI and backend memory both wiped.  
-3. **Definition of Done:** After click, history disappears and bot forgets.  
-4. **Practical Takeaway:** Keywords: `.clear()`. Reset gives users control.
+**Level 6.3: Multi‑Turn Test**
 
-**🔥 COMBO TASK (Level 6.6):**  
-1. **Task:** Build the full Streamlit app with login, chat, streaming, reset, and RAG+memory. Test two users (log in with different emails) – they should have isolated conversations.  
-2. **Logic:** Each user’s session is independent.  
-3. **Definition of Done:**  
-   - Each user sees their own chat.  
-   - Answers are grounded in the codebase.  
-   - Streaming works, reset works.  
-   - LangSmith traces show both retrieval and generation.  
-4. **Practical Takeaway:** You now have a multi‑tenant, production‑ready chatbot interface.
+1. **Task:** User se do questions puchho jo pehle wale par depend karte hain (e.g., "What is a MySQL JOIN?" then "Can you show me an example of LEFT JOIN?").  
+2. **Logic:** Second answer should reference first.  
+3. **Definition of Done:** Context preserved.
+
+**🔥 COMBO TASK (Level 6.4):**  
+1. **Task:** Simulate a full conversation (3 turns), stop app, restart, login again – ask a follow‑up question. Bot should remember. Check SQLite DB to see stored messages.  
+2. **Logic:** Persistence works.  
+3. **Definition of Done:** Memory works across restarts.
+
+**Practical Takeaway:**  
+- Keywords: `RunnableWithMessageHistory`, `SQLChatMessageHistory`, `session_id`.  
+- Why: Memory is essential for natural conversations.
 
 ---
 
-## 🚀 **Mission 7: Final Integration – CodeSarthi Zinda Hai**  
-*(Covers everything together)*
+## 🧩 **Module 7: Streaming + Reset – Pro Level UX**  
+*(Step 11 from roadmap)*
 
-**Level 7.1: Single File – Sab Kuch Ek Saath**  
-1. **Task:** Combine all pieces into a single file `codesarthi_app.py`. It should:  
-   - Set up LangSmith tracing via `.env`.  
-   - Load persistent Chroma store (codebase knowledge).  
-   - Create RetrievalQA chain.  
-   - Wrap with `RunnableWithMessageHistory` using SQLite.  
-   - Implement Streamlit UI with login, chat, streaming, reset.  
-2. **Logic:** All components work together in one place.  
-3. **Definition of Done:** The script runs without errors and loads the UI.  
-4. **Practical Takeaway:** You’ve built a fully integrated application.
+**Level 7.1: Streaming Responses**
 
-**Level 7.2: Run & Test – End‑to‑End**  
-1. **Task:** Start the app with `streamlit run codesarthi_app.py`. Log in as two different developers. Ask technical questions that require both memory and codebase knowledge (e.g., first “What is the main function of `auth.py`?”, then “How does it validate tokens?”).  
-2. **Logic:** Tests full stack.  
-3. **Definition of Done:**  
-   - Different users have separate conversations.  
-   - Answers are accurate from the codebase.  
-   - LangSmith shows traces for every interaction.  
-   - Chat history persists after restart (SQLite).  
-   - Reset works independently.  
-4. **Practical Takeaway:** You’ve verified that the complete assistant works.
+1. **Task:** Replace static answer with streaming. Use `st.write_stream` inside the assistant's chat message. Iterate over `chain.stream()` and yield chunks.  
+2. **Logic:** Real‑time typing effect.  
+3. **Definition of Done:** Answer appears word by word.
+
+**Level 7.2: Reset Button – Naya Thread**
+
+1. **Task:** Sidebar mein "New Thread" button daalo. On click:  
+   - Clear `st.session_state.messages`  
+   - Call `get_session_history(session_id).clear()` to wipe SQLite history for that user.  
+2. **Logic:** UI and backend both cleared.  
+3. **Definition of Done:** After click, chat history gone, bot forgets.
 
 **🔥 COMBO TASK (Level 7.3):**  
-1. **Task:** Add citations: when the bot answers, display the source file and line number (extracted from `response['source_documents']` metadata). For example, “Source: `auth.py`, line 42”.  
-2. **Logic:** Citations increase trust.  
-3. **Definition of Done:** Citations appear with every answer.  
-4. **Practical Takeaway:** You now have a transparent, auditable AI assistant.
+1. **Task:** Test streaming + reset together. Start a conversation, use reset, ask a new question – bot should behave as if fresh.  
+2. **Logic:** Full UX polish.  
+3. **Definition of Done:** Streaming smooth, reset works.
+
+**Practical Takeaway:**  
+- Keywords: `st.write_stream`, `.stream()`, `.clear()`.  
+- Why: Streaming and reset are standard in modern chatbots.
+
+---
+
+## 🧩 **Module 8: Final Integration – CodeSarthi Zinda Hai**  
+*(Step 12 from roadmap)*
+
+**Level 8.1: End‑to‑End Test – Multi‑User**
+
+1. **Task:** Two different users signup and login (different emails). Each asks separate questions. Verify conversations are isolated.  
+2. **Logic:** Each user's session_id different.  
+3. **Definition of Done:** Users don't see each other's history.
+
+**Level 8.2: Memory & RAG Combined**
+
+1. **Task:** Single user, ask a question that requires both memory and codebase knowledge (e.g., first ask "What does auth.py do?" then ask "How does it handle password hashing?").  
+2. **Logic:** RAG provides code facts, memory provides context.  
+3. **Definition of Done:** Second answer uses first context and codebase.
+
+**Level 8.3: PDF Query Test – MySQL Cheatsheet**
+
+1. **Task:** Ask MySQL-related questions from `pdf_file/mysql_cheatsheet.pdf`:  
+   - "What is the syntax for a SELECT statement in MySQL?"  
+   - "How do I use JOIN in MySQL?"  
+   - "What are the different MySQL data types?"  
+2. **Logic:** PDF should be ingested and retrievable.  
+3. **Definition of Done:** Answers come from `mysql_cheatsheet.pdf` content, source document shows the PDF file.
+
+**Level 8.4: Project Structure Verify Karo**
+
+1. **Task:** Final project structure check karo – ensure ye sab files/folders exist hain:  
+   ```
+   codesarthi/
+   ├── .env
+   ├── .gitignore
+   ├── requirements.txt
+   ├── README.md
+   ├── auth_db.py
+   ├── ingest.py
+   ├── app.py
+   ├── repo/
+   │   ├── README.md
+   │   ├── auth.py
+   │   └── user_service.py
+   ├── pdf_file/
+   │   └── mysql_cheatsheet.pdf
+   ├── chroma_code/      ← auto-generated, gitignored
+   ├── users.db          ← auto-generated, gitignored
+   └── code_history.db   ← auto-generated, gitignored
+   ```
+2. **Logic:** README mein defined structure se match karna zaroori hai.  
+3. **Definition of Done:** Sab files present, `chroma_code/`, `users.db`, `code_history.db` gitignored.
+
+**🔥 COMBO TASK (Level 8.5):**  
+1. **Task:** Run all features together: Signup → Login → multi‑turn RAG conversation → MySQL PDF query → reset → new conversation → streaming. Check LangSmith traces (if setup).  
+2. **Logic:** Full system validation.  
+3. **Definition of Done:** All features work, no errors, traces visible.
+
+**Practical Takeaway:**  
+- Keywords: Full architecture – RAG + Memory + UI + Observability.  
+- Why: This is exactly how enterprise assistants are built.
 
 ---
 
 ## 🏁 **MODULE 8 RECAP (Tera Status Report)**  
 **Siksha Summary:**  
 - You built a complete production‑ready **codebase assistant** that:  
-  - Uses local LLM (Ollama) for privacy (code stays local).  
-  - Ingests code repositories, READMEs, comments, and docs.  
-  - Chunks, embeds, and stores them in a vector database (Chroma).  
-  - Performs semantic retrieval for accurate answers.  
-  - Maintains conversation memory per developer (SQLite).  
-  - Provides a chat UI (Streamlit) with streaming and reset.  
-  - Includes multi‑user login and isolated sessions.  
-  - Leverages LangSmith for full auditability.  
+  - Uses local LLM (Ollama + mistral:7b) for privacy  
+  - Ingests code files (`repo/`) and PDF documents (`pdf_file/mysql_cheatsheet.pdf`)  
+  - Chunks, embeds, stores in Chroma  
+  - Retrieves semantically relevant context from both code and PDF  
+  - Maintains conversation memory per user (SQLite)  
+  - Provides a chat UI with streaming and reset  
+  - Includes multi‑user signup/login and isolated sessions  
+  - Uses LangSmith for full observability  
+  - Proper `.gitignore` for sensitive files  
 
-**Guru-ji’s Warning:**  
-*“Check kar le bhai! Kya tujhe yeh sab bina chat sheet ke karna aa gaya hai?  
+**Guru-ji's Warning:**  
+*"Check kar le bhai! Kya tujhe yeh sab bina chat sheet ke karna aa gaya hai?  
 - Virtual environment bana sakta hai?  
 - Ollama background service ki tarah chalana?  
-- Prompt template me technical variables inject karna?  
-- Pipe operator se chain banana?  
-- RunnableWithMessageHistory lagana aur SQLite file inspect karna?  
-- Codebase files load karke chunks banana aur embeddings generate karna?  
-- Chroma database me store aur similarity search karna?  
-- Retriever interface aur RetrievalQA chain ka istemal?  
-- Streamlit me login, session state, chat messages, streaming, reset – sab?  
-- In sabko ek saath mila ke final code assistant bana sakta hai?  
+- `.gitignore` properly set karna?  
+- Sample files structure set karna (`repo/` aur `pdf_file/`)?  
+- auth_db.py mein hashed passwords store karna aur signup implement karna?  
+- ingest.py se files load, chunk, embed, DB store karna (code + PDF dono)?  
+- Vector DB load karke RetrievalQA chain banana?  
+- Streamlit signup/login aur chat UI banana?  
+- RunnableWithMessageHistory se memory add karna?  
+- Streaming aur reset implement karna?  
+- Multi‑user isolation test karna?  
+- MySQL PDF se questions answer ho rahe hain?  
+- Final project structure README se match karna?  
 
-Agar inme se ek bhi cheez mein doubt hai ya confuse hai, toh chup chaap peeche ja aur wapas execute kar. Aage badhne ka koi fayda nahi agar basics hile hue hain!”*
+Agar inme se ek bhi cheez mein doubt hai ya confuse hai, toh chup chaap peeche ja aur wapas execute kar. Aage badhne ka koi fayda nahi agar basics hile hue hain!"*
 
 ---
 
 ⚡ **GURUDAKSHINA (The Checkpoint):**  
-**Sare Levels clear hue? Screenshots taiyar rakh! Agar sab properly done hai toh type ‘CONTINUE’ for the next set of missions – yani tujhe kuch aur nahi, tu ab apne man se koi bhi code repository le ke ye app bana sakta hai. Aage kya karna hai? Feedback de, ya naye developer‑friendly features add kar.**
-
-==================================================================================
+**Sare Levels clear hue? Screenshots taiyar rakh! Agar sab properly done hai toh type 'CONTINUE' for the next set of missions – yani tujhe kuch aur nahi, tu ab apne man se koi bhi code repository le ke ye app bana sakta hai. Aage kya karna hai? Feedback de, ya naye features add kar.**
