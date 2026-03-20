@@ -2,7 +2,7 @@
 ---
 
 ## 🧩 **Module 1: Base Camp Setup – Apna Kitchen Taiyar Kar**  
-*(Steps 1–3 from roadmap)*
+*(Installation & Prerequisites)*
 
 **Level 1.1: Virtual Environment – Alag Kitchen**
 
@@ -18,9 +18,9 @@
 
 **Level 1.3: Ollama – Local LLM Ka Engine**
 
-1. **Task:** Ollama install karo, background service start karo (`ollama serve`). `ollama pull mistral:7b` chalao. Terminal mein `ollama run mistral:7b` se test karo: "What is a Python decorator?".  
-2. **Logic:** Ollama runs the LLM locally – no cloud dependency.  
-3. **Definition of Done:** Model answer de.
+1. **Task:** Ollama install karo (https://ollama.com/), background service start karo (`ollama serve` ek alag terminal mein). `ollama pull mistral:7b` chalao. Terminal mein `ollama run mistral:7b` se test karo: "What is a Python decorator?".  
+2. **Logic:** Ollama runs the LLM locally – no cloud dependency. Ye hamesha background mein chalna chahiye.  
+3. **Definition of Done:** Model answer de aur Ollama service running rahe.
 
 **Level 1.4: .gitignore – Sensitive Files Ko Chhupao**
 
@@ -30,13 +30,13 @@
 
 **Level 1.5: LangSmith – CCTV Lagao (Optional)**
 
-1. **Task:** `.env` file banao. Usme `LANGCHAIN_TRACING_V2=true`, `LANGCHAIN_ENDPOINT`, `LANGCHAIN_API_KEY`, `LANGCHAIN_PROJECT=codesarthi` daalo.  
-2. **Logic:** Har LLM call trace hoti hai – debugging aasan.  
-3. **Definition of Done:** Baad mein `app.py` run karne par LangSmith dashboard pe traces dikhe.
+1. **Task:** `.env` file banao. Usme `LANGCHAIN_TRACING_V2=true`, `LANGCHAIN_ENDPOINT=https://api.smith.langchain.com`, `LANGCHAIN_API_KEY=ls__your_key_here`, `LANGCHAIN_PROJECT=codesarthi` daalo.  
+2. **Logic:** Har LLM call trace hoti hai – debugging aasan. Ye optional hai – app bina iske bhi chalega.  
+3. **Definition of Done:** Baad mein `app.py` run karne par LangSmith dashboard pe traces dikhe (agar setup kiya).
 
 **🔥 COMBO TASK (Level 1.6):**  
 1. **Task:** Ek chhota Python script (e.g., `test_env.py`) banao jo `ChatOllama` import kare, `mistral:7b` se invoke kare "What is a unit test?", aur response print kare. Script run karo.  
-2. **Logic:** Sab components ek saath kaam kar rahe hain ya nahi verify karo.  
+2. **Logic:** Sab components ek saath kaam kar rahe hain ya nahi verify karo – Ollama, LangChain, Python environment.  
 3. **Definition of Done:** Terminal pe answer aaye; LangSmith trace dikhe (agar setup kiya).
 
 **Practical Takeaway:**  
@@ -46,7 +46,7 @@
 ---
 
 ## 🧩 **Module 2: User Authentication – Har User Ka Apna Kamra**  
-*(Steps 4–5 from roadmap)*
+*(User Management & Database Setup)*
 
 **Level 2.1: Sample Data Taiyar Kar**
 
@@ -60,26 +60,26 @@
 
 **Level 2.2: Auth DB – SQLite Mein Users**
 
-1. **Task:** `auth_db.py` file banao. Isme teen cheezein implement karo:  
-   - Database initialize karo – `users` table banao with `email`, `password` (hashed)  
-   - User register karo – password ko hash karo, insert karo  
-   - User verify karo – email aur password check karo, match pe user ID return karo  
-2. **Logic:** SQLite local hai, passwords store mat karo plain mein.  
+1. **Task:** `auth_db.py` file banao. Isme teen functions implement karo:  
+   - `init_db()` – Database initialize karo – `users` table banao with columns: `id`, `email`, `password` (hashed)  
+   - `register_user(email, password)` – password ko `hashlib.sha256` se hash karo, insert karo  
+   - `verify_user(email, password)` – email aur password check karo, match pe user ID return karo, mismatch pe None  
+2. **Logic:** SQLite local hai, passwords store mat karo plain mein. Hashing ensures security.  
 3. **Definition of Done:** Script run karo, ek test user register karo, login verify karo – `users.db` file ban jaaye.
 
 **🔥 COMBO TASK (Level 2.3):**  
 1. **Task:** `auth_db.py` ke functions ko use karke ek quick test script likho. Register a user, then try to login with correct and wrong password. Print messages for each.  
-2. **Logic:** Verify that hashing and DB operations work.  
-3. **Definition of Done:** Correct password pe success message, wrong pe failure.
+2. **Logic:** Verify that hashing and DB operations work correctly.  
+3. **Definition of Done:** Correct password pe "Login successful" message, wrong pe "Invalid credentials" message.
 
 **Practical Takeaway:**  
-- Keywords: `sqlite3`, `hashlib.sha256`, `INSERT`, `SELECT`.  
+- Keywords: `sqlite3`, `hashlib.sha256`, `INSERT`, `SELECT`, `CREATE TABLE`.  
 - Why: Multi‑user support ke liye user isolation zaroori hai.
 
 ---
 
 ## 🧩 **Module 3: Data Ingestion – Codebase Ko Samajhna**  
-*(Step 6 from roadmap)*
+*(Vector Database Creation & Embedding)*
 
 **Level 3.1: Files Load Karo**
 
@@ -87,68 +87,68 @@
    - Markdown files ke liye `DirectoryLoader` with `glob="**/*.md"`  
    - Python files ke liye `DirectoryLoader` with `glob="**/*.py"`  
    - PDF files ke liye `PyPDFLoader` – path: `pdf_file/mysql_cheatsheet.pdf`  
-   - Saari files ek list mein collect karo.  
-2. **Logic:** Different loaders for different file types.  
-3. **Definition of Done:** Print total documents loaded – count should match files.
+   - Saari files ek list mein collect karo aur print total count.  
+2. **Logic:** Different loaders for different file types. This is the first step of RAG.  
+3. **Definition of Done:** Print total documents loaded – count should match files (3 from repo + 1 PDF).
 
 **Level 3.2: Chunks Banao**
 
 1. **Task:** `RecursiveCharacterTextSplitter` use karo with `chunk_size=1500`, `chunk_overlap=200`. Saari documents ko split karo.  
-2. **Logic:** Overlap ensures context continuity.  
-3. **Definition of Done:** Number of chunks > original document count.
+2. **Logic:** Overlap ensures context continuity between chunks. Smaller chunks = better retrieval accuracy.  
+3. **Definition of Done:** Number of chunks > original document count. Print chunk count.
 
 **Level 3.3: Embeddings Banao**
 
-1. **Task:** `OllamaEmbeddings` with `mistral:7b` instantiate karo. Ek sample chunk ka vector generate karo aur length print karo.  
-2. **Logic:** Embeddings capture code semantics.  
-3. **Definition of Done:** Vector length constant (e.g., 3072).  
+1. **Task:** `OllamaEmbeddings` with `model="mistral:7b"` instantiate karo. Ek sample chunk ka vector generate karo aur length print karo.  
+2. **Logic:** Embeddings capture code semantics – similar code chunks will have similar vectors.  
+3. **Definition of Done:** Vector length constant (e.g., 3072). Verify embedding works without errors.
 
 **Level 3.4: Chroma DB Mein Save Karo**
 
-1. **Task:** `Chroma.from_documents` use karo – chunks, embeddings, `persist_directory="./chroma_code"`, collection name `"code_knowledge"`.  
-2. **Logic:** Vector store disk par persist hota hai.  
-3. **Definition of Done:** `chroma_code/` folder ban jaaye.
+1. **Task:** `Chroma.from_documents` use karo – pass chunks, embeddings, `persist_directory="./chroma_code"`, collection name `"code_knowledge"`.  
+2. **Logic:** Vector store disk par persist hota hai – isse baad mein quickly load kar sakte ho.  
+3. **Definition of Done:** `chroma_code/` folder ban jaaye with vector data inside.
 
 **🔥 COMBO TASK (Level 3.5):**  
-1. **Task:** Load the persisted DB back (using `Chroma` constructor), perform two similarity searches:  
+1. **Task:** Load the persisted DB back (using `Chroma` constructor with same `persist_directory`), perform two similarity searches:  
    - `"how does authentication work?"` – should return chunks from `auth.py`  
    - `"how to use JOIN in MySQL?"` – should return chunks from `mysql_cheatsheet.pdf`  
-   Print top 3 chunks for each.  
-2. **Logic:** Verify that both code and PDF retrieval works.  
-3. **Definition of Done:** Retrieved chunks contain relevant content from respective sources.
+   Print top 3 chunks for each with source file names.  
+2. **Logic:** Verify that both code and PDF retrieval works correctly.  
+3. **Definition of Done:** Retrieved chunks contain relevant content from respective sources. Source documents clearly show which file they came from.
 
 **Practical Takeaway:**  
 - Keywords: `DirectoryLoader`, `PyPDFLoader`, `RecursiveCharacterTextSplitter`, `OllamaEmbeddings`, `Chroma.from_documents`, `similarity_search`.  
-- Why: Without ingestion, assistant has no knowledge.
+- Why: Without ingestion, assistant has no knowledge. This is the foundation of RAG.
 
 ---
 
 ## 🧩 **Module 4: RAG Chain – Assistant Ka Brain**  
-*(Steps 8 from roadmap)*
+*(Retrieval-Augmented Generation Setup)*
 
 **Level 4.1: Vector DB Load Karo**
 
-1. **Task:** `app.py` mein (after login) Chroma DB load karo using `persist_directory="./chroma_code"` and same embedding model.  
-2. **Logic:** DB already built, just connect.  
-3. **Definition of Done:** DB object prints without error.
+1. **Task:** `app.py` mein (after user login) Chroma DB load karo using `persist_directory="./chroma_code"` and same embedding model `OllamaEmbeddings(model="mistral:7b")`.  
+2. **Logic:** DB already built from ingest.py, just connect to it.  
+3. **Definition of Done:** DB object loads without error. Verify by checking collection count.
 
 **Level 4.2: Retriever Banao**
 
-1. **Task:** `.as_retriever(search_kwargs={"k": 3})` use karo.  
-2. **Logic:** Retriever top 3 most relevant chunks lega.  
-3. **Definition of Done:** Retriever object ban jaaye.
+1. **Task:** `.as_retriever(search_kwargs={"k": 3})` use karo – ye top 3 most relevant chunks retrieve karega.  
+2. **Logic:** Retriever is the bridge between user query and vector DB.  
+3. **Definition of Done:** Retriever object ban jaaye. Test with a sample query.
 
 **Level 4.3: LLM Connect Karo**
 
-1. **Task:** `Ollama` with model `mistral:7b` instantiate karo.  
-2. **Logic:** Local LLM engine.  
-3. **Definition of Done:** `llm.invoke("test")` works (optional test).
+1. **Task:** `ChatOllama` with model `"mistral:7b"` instantiate karo. Temperature, top_p settings optional hain.  
+2. **Logic:** Local LLM engine – ye actual answers generate karega.  
+3. **Definition of Done:** `llm.invoke("test")` works without error.
 
 **Level 4.4: RetrievalQA Chain Banao**
 
 1. **Task:** `RetrievalQA.from_chain_type(llm=llm, retriever=retriever, return_source_documents=True)` use karo.  
-2. **Logic:** This chain automatically retrieves context and generates answer.  
-3. **Definition of Done:** Chain object ready.
+2. **Logic:** This chain automatically retrieves context and generates answer. `return_source_documents=True` ensures we know which files were used.  
+3. **Definition of Done:** Chain object ready. Test with hardcoded query.
 
 **🔥 COMBO TASK (Level 4.5):**  
 1. **Task:** Do hardcoded queries test karo:  
@@ -156,122 +156,146 @@
    - `qa_chain.invoke({"query": "What is the syntax for SELECT in MySQL?"})` – answer from `pdf_file/mysql_cheatsheet.pdf`  
    Print answer and source documents for both.  
 2. **Logic:** Verify RAG works for both code and PDF sources.  
-3. **Definition of Done:** Answers based on correct source files.
+3. **Definition of Done:** Answers based on correct source files. Source documents clearly show which file was used.
 
 **Practical Takeaway:**  
-- Keywords: `Chroma`, `as_retriever`, `RetrievalQA.from_chain_type`, `return_source_documents`.  
-- Why: RAG is the core of the assistant.
+- Keywords: `Chroma`, `as_retriever`, `RetrievalQA.from_chain_type`, `return_source_documents`, `ChatOllama`.  
+- Why: RAG is the core of the assistant – it combines retrieval + generation.
 
 ---
 
 ## 🧩 **Module 5: Chat UI – Jadoo Ki Jhappi**  
-*(Steps 7, 9 from roadmap)*
+*(Streamlit Interface & User Interaction)*
 
 **Level 5.1: Login + Signup Form**
 
 1. **Task:** `app.py` mein Streamlit app start karo. Agar user logged in nahi hai, do tabs dikhao – **Login** aur **Sign Up**:  
-   - Login tab: email + password → `auth_db.py` ke verify function se check karo  
-   - Sign Up tab: email + password → `auth_db.py` ke register function se naya user banao  
+   - Login tab: email + password input fields → `auth_db.py` ke `verify_user()` function se check karo → success/failure message  
+   - Sign Up tab: email + password input fields → `auth_db.py` ke `register_user()` function se naya user banao → success/failure message  
 2. **Logic:** Session state tracks login. Naye users bina manual DB entry ke register ho sakein.  
-3. **Definition of Done:** Naya user signup kar sake, existing user login kar sake, "Welcome" message aaye.
+3. **Definition of Done:** Naya user signup kar sake, existing user login kar sake, "Welcome [email]" message aaye.
 
 **Level 5.2: Chat Interface**
 
-1. **Task:** Login ke baad `st.chat_input` use karo. User messages ko `st.session_state.messages` list mein store karo (role: user, content: text). Loop through list aur each message ko `st.chat_message` se display karo.  
-2. **Logic:** Builds the visual conversation.  
-3. **Definition of Done:** Type karo, message appear ho.
+1. **Task:** Login ke baad `st.chat_input("Ask me anything...")` use karo. User messages ko `st.session_state.messages` list mein store karo with structure: `{"role": "user", "content": text}`. Loop through list aur each message ko `st.chat_message(role)` se display karo.  
+2. **Logic:** Builds the visual conversation history.  
+3. **Definition of Done:** Type karo, message appear ho. Previous messages visible rahen.
 
 **Level 5.3: RAG Integration**
 
-1. **Task:** Jab user message bheje, call the RetrievalQA chain with the user's query. Display the answer using `st.chat_message` (assistant role).  
+1. **Task:** Jab user message bheje, call the RetrievalQA chain with the user's query. Display the answer using `st.chat_message("assistant")`. Store assistant response in `st.session_state.messages` too.  
 2. **Logic:** Assistant answers using codebase and PDF.  
-3. **Definition of Done:** "How do I use GROUP BY in MySQL?" puchho – answer from PDF aaye.
+3. **Definition of Done:** "How do I use GROUP BY in MySQL?" puchho – answer from PDF aaye. Source documents visible.
 
-**🔥 COMBO TASK (Level 5.4):**  
-1. **Task:** Chat UI complete karo – signup/login, chat input, RAG answer display. Test with both a code question and a MySQL question.  
+**Level 5.4: Source Documents Display**
+
+1. **Task:** RetrievalQA chain se `source_documents` extract karo. Ek expandable section mein show karo – "📚 Sources Used" – jisme file names aur relevant chunks dikhein.  
+2. **Logic:** Transparency – user ko pata chale ki answer kahan se aaya.  
+3. **Definition of Done:** Sources section visible with file names and chunk previews.
+
+**🔥 COMBO TASK (Level 5.5):**  
+1. **Task:** Chat UI complete karo – signup/login, chat input, RAG answer display, source documents. Test with both a code question and a MySQL question.  
 2. **Logic:** Basic working chatbot.  
-3. **Definition of Done:** Answer appears, no errors.
+3. **Definition of Done:** Answer appears, sources visible, no errors.
 
 **Practical Takeaway:**  
-- Keywords: `st.session_state`, `st.chat_input`, `st.chat_message`, `st.form`, `st.tabs`.  
-- Why: UI makes the assistant usable.
+- Keywords: `st.session_state`, `st.chat_input`, `st.chat_message`, `st.tabs`, `st.expander`.  
+- Why: UI makes the assistant usable and transparent.
 
 ---
 
 ## 🧩 **Module 6: Memory – Ghajini Se Genie Tak**  
-*(Step 10 from roadmap)*
+*(Conversation History & Context Persistence)*
 
 **Level 6.1: SQLite History Setup**
 
-1. **Task:** `get_session_history` function banao jo `SQLChatMessageHistory` return kare with connection string `sqlite:///code_history.db`.  
-2. **Logic:** Messages will persist.  
-3. **Definition of Done:** File `code_history.db` create ho.
+1. **Task:** `get_session_history(session_id)` function banao jo `SQLChatMessageHistory` return kare with connection string `sqlite:///code_history.db`. Ye function session_id ke basis par history retrieve karega.  
+2. **Logic:** Messages will persist across app restarts.  
+3. **Definition of Done:** File `code_history.db` create ho. Function callable ho.
 
 **Level 6.2: History Wrapper Lagao**
 
-1. **Task:** Apni RAG chain ko `RunnableWithMessageHistory` mein wrap karo. Pass `get_session_history`, `input_messages_key="query"`, `history_messages_key="history"`.  
-2. **Logic:** Wrapper automatically injects past messages.  
-3. **Definition of Done:** Chain object now stateful.
+1. **Task:** Apni RAG chain ko `RunnableWithMessageHistory` mein wrap karo. Pass:  
+   - `get_session_history` function  
+   - `input_messages_key="query"`  
+   - `history_messages_key="history"`  
+2. **Logic:** Wrapper automatically injects past messages into the prompt.  
+3. **Definition of Done:** Chain object now stateful. Test with multi-turn conversation.
 
-**Level 6.3: Multi‑Turn Test**
+**Level 6.3: Session ID Management**
+
+1. **Task:** Har logged-in user ke liye unique `session_id` generate karo (e.g., `f"{user_email}_{timestamp}"` or just `user_email`). Ye session_id `st.session_state` mein store karo.  
+2. **Logic:** Each user's history isolated.  
+3. **Definition of Done:** Different users have different session IDs.
+
+**Level 6.4: Multi‑Turn Test**
 
 1. **Task:** User se do questions puchho jo pehle wale par depend karte hain (e.g., "What is a MySQL JOIN?" then "Can you show me an example of LEFT JOIN?").  
-2. **Logic:** Second answer should reference first.  
-3. **Definition of Done:** Context preserved.
+2. **Logic:** Second answer should reference first question's context.  
+3. **Definition of Done:** Context preserved. Second answer mentions "LEFT JOIN" specifically.
 
-**🔥 COMBO TASK (Level 6.4):**  
-1. **Task:** Simulate a full conversation (3 turns), stop app, restart, login again – ask a follow‑up question. Bot should remember. Check SQLite DB to see stored messages.  
-2. **Logic:** Persistence works.  
-3. **Definition of Done:** Memory works across restarts.
+**🔥 COMBO TASK (Level 6.5):**  
+1. **Task:** Simulate a full conversation (3 turns), stop app, restart, login again – ask a follow‑up question. Bot should remember previous conversation. Check SQLite DB to see stored messages.  
+2. **Logic:** Persistence works across restarts.  
+3. **Definition of Done:** Memory works across restarts. `code_history.db` contains all messages.
 
 **Practical Takeaway:**  
-- Keywords: `RunnableWithMessageHistory`, `SQLChatMessageHistory`, `session_id`.  
+- Keywords: `RunnableWithMessageHistory`, `SQLChatMessageHistory`, `session_id`, `get_session_history`.  
 - Why: Memory is essential for natural conversations.
 
 ---
 
 ## 🧩 **Module 7: Streaming + Reset – Pro Level UX**  
-*(Step 11 from roadmap)*
+*(Real-time Response & Session Management)*
 
 **Level 7.1: Streaming Responses**
 
-1. **Task:** Replace static answer with streaming. Use `st.write_stream` inside the assistant's chat message. Iterate over `chain.stream()` and yield chunks.  
-2. **Logic:** Real‑time typing effect.  
-3. **Definition of Done:** Answer appears word by word.
+1. **Task:** Replace static answer with streaming. Use `st.write_stream()` inside the assistant's chat message. Iterate over `chain.stream({"query": user_query, "session_id": session_id})` and yield chunks.  
+2. **Logic:** Real‑time typing effect – user sees answer appearing word by word.  
+3. **Definition of Done:** Answer appears word by word, not all at once.
 
 **Level 7.2: Reset Button – Naya Thread**
 
-1. **Task:** Sidebar mein "New Thread" button daalo. On click:  
-   - Clear `st.session_state.messages`  
-   - Call `get_session_history(session_id).clear()` to wipe SQLite history for that user.  
+1. **Task:** Sidebar mein "🔄 New Thread" button daalo. On click:  
+   - Clear `st.session_state.messages` (UI history)  
+   - Call `get_session_history(session_id).clear()` to wipe SQLite history for that user  
+   - Show "Thread cleared! Start fresh." message  
 2. **Logic:** UI and backend both cleared.  
-3. **Definition of Done:** After click, chat history gone, bot forgets.
+3. **Definition of Done:** After click, chat history gone, bot forgets. New conversation starts fresh.
 
-**🔥 COMBO TASK (Level 7.3):**  
-1. **Task:** Test streaming + reset together. Start a conversation, use reset, ask a new question – bot should behave as if fresh.  
+**Level 7.3: Logout Button**
+
+1. **Task:** Sidebar mein "🚪 Logout" button daalo. On click:  
+   - Clear `st.session_state.user_email` aur `st.session_state.session_id`  
+   - Rerun app (Streamlit automatically shows login form)  
+2. **Logic:** User session ends.  
+3. **Definition of Done:** After logout, login form appears again.
+
+**🔥 COMBO TASK (Level 7.4):**  
+1. **Task:** Test streaming + reset together. Start a conversation, use reset, ask a new question – bot should behave as if fresh. Then logout and login as different user – verify isolation.  
 2. **Logic:** Full UX polish.  
-3. **Definition of Done:** Streaming smooth, reset works.
+3. **Definition of Done:** Streaming smooth, reset works, logout works, user isolation verified.
 
 **Practical Takeaway:**  
-- Keywords: `st.write_stream`, `.stream()`, `.clear()`.  
+- Keywords: `st.write_stream`, `.stream()`, `.clear()`, `st.session_state`, `st.sidebar`.  
 - Why: Streaming and reset are standard in modern chatbots.
 
 ---
 
 ## 🧩 **Module 8: Final Integration – CodeSarthi Zinda Hai**  
-*(Step 12 from roadmap)*
+*(End-to-End Testing & Validation)*
 
 **Level 8.1: End‑to‑End Test – Multi‑User**
 
 1. **Task:** Two different users signup and login (different emails). Each asks separate questions. Verify conversations are isolated.  
-2. **Logic:** Each user's session_id different.  
-3. **Definition of Done:** Users don't see each other's history.
+2. **Logic:** Each user's session_id different → different history in SQLite.  
+3. **Definition of Done:** Users don't see each other's history. Each user's chat is private.
 
 **Level 8.2: Memory & RAG Combined**
 
 1. **Task:** Single user, ask a question that requires both memory and codebase knowledge (e.g., first ask "What does auth.py do?" then ask "How does it handle password hashing?").  
-2. **Logic:** RAG provides code facts, memory provides context.  
-3. **Definition of Done:** Second answer uses first context and codebase.
+2. **Logic:** RAG provides code facts, memory provides context from first question.  
+3. **Definition of Done:** Second answer uses first context and codebase. Answer mentions "auth.py" from first question.
 
 **Level 8.3: PDF Query Test – MySQL Cheatsheet**
 
@@ -282,54 +306,66 @@
 2. **Logic:** PDF should be ingested and retrievable.  
 3. **Definition of Done:** Answers come from `mysql_cheatsheet.pdf` content, source document shows the PDF file.
 
-**Level 8.4: Project Structure Verify Karo**
+**Level 8.4: Code Query Test – Repository**
+
+1. **Task:** Ask code-related questions from `repo/`:  
+   - "What does auth.py do?"  
+   - "What is the purpose of user_service.py?"  
+   - "Explain the password hashing function."  
+2. **Logic:** Code files should be ingested and retrievable.  
+3. **Definition of Done:** Answers come from code files, source documents show correct file names.
+
+**Level 8.5: Project Structure Verify Karo**
 
 1. **Task:** Final project structure check karo – ensure ye sab files/folders exist hain:  
    ```
    codesarthi/
-   ├── .env
+   ├── .env                  ← LangSmith keys (optional, gitignored)
    ├── .gitignore
    ├── requirements.txt
    ├── README.md
-   ├── auth_db.py
-   ├── ingest.py
-   ├── app.py
-   ├── repo/
+   ├── auth_db.py            ← User signup, login, password hashing
+   ├── ingest.py             ← One-time data ingestion script
+   ├── app.py                ← Main Streamlit app
+   ├── repo/                 ← Your codebase goes here
    │   ├── README.md
    │   ├── auth.py
    │   └── user_service.py
-   ├── pdf_file/
+   ├── pdf_file/             ← PDF documents go here
    │   └── mysql_cheatsheet.pdf
-   ├── chroma_code/      ← auto-generated, gitignored
-   ├── users.db          ← auto-generated, gitignored
-   └── code_history.db   ← auto-generated, gitignored
+   ├── chroma_code/          ← auto-generated, gitignored
+   ├── users.db              ← auto-generated, gitignored
+   └── code_history.db       ← auto-generated, gitignored
    ```
 2. **Logic:** README mein defined structure se match karna zaroori hai.  
 3. **Definition of Done:** Sab files present, `chroma_code/`, `users.db`, `code_history.db` gitignored.
 
-**🔥 COMBO TASK (Level 8.5):**  
-1. **Task:** Run all features together: Signup → Login → multi‑turn RAG conversation → MySQL PDF query → reset → new conversation → streaming. Check LangSmith traces (if setup).  
+**🔥 COMBO TASK (Level 8.6):**  
+1. **Task:** Run all features together in sequence:  
+   - Signup → Login → multi‑turn RAG conversation (code + PDF) → MySQL PDF query → reset → new conversation → streaming test → logout → login as different user → verify isolation → check LangSmith traces (if setup).  
 2. **Logic:** Full system validation.  
-3. **Definition of Done:** All features work, no errors, traces visible.
+3. **Definition of Done:** All features work, no errors, traces visible, user isolation verified.
 
 **Practical Takeaway:**  
-- Keywords: Full architecture – RAG + Memory + UI + Observability.  
+- Keywords: Full architecture – RAG + Memory + UI + Observability + Multi-user.  
 - Why: This is exactly how enterprise assistants are built.
 
 ---
 
 ## 🏁 **MODULE 8 RECAP (Tera Status Report)**  
+
 **Siksha Summary:**  
-- You built a complete production‑ready **codebase assistant** that:  
-  - Uses local LLM (Ollama + mistral:7b) for privacy  
-  - Ingests code files (`repo/`) and PDF documents (`pdf_file/mysql_cheatsheet.pdf`)  
-  - Chunks, embeds, stores in Chroma  
-  - Retrieves semantically relevant context from both code and PDF  
-  - Maintains conversation memory per user (SQLite)  
-  - Provides a chat UI with streaming and reset  
-  - Includes multi‑user signup/login and isolated sessions  
-  - Uses LangSmith for full observability  
-  - Proper `.gitignore` for sensitive files  
+You built a complete production‑ready **codebase assistant** that:  
+- ✅ Uses local LLM (Ollama + mistral:7b) for privacy  
+- ✅ Ingests code files (`repo/`) and PDF documents (`pdf_file/mysql_cheatsheet.pdf`)  
+- ✅ Chunks, embeds, stores in Chroma vector database  
+- ✅ Retrieves semantically relevant context from both code and PDF  
+- ✅ Maintains conversation memory per user (SQLite)  
+- ✅ Provides a chat UI with streaming and reset  
+- ✅ Includes multi‑user signup/login and isolated sessions  
+- ✅ Uses LangSmith for full observability (optional)  
+- ✅ Proper `.gitignore` for sensitive files  
+- ✅ Shows source documents for transparency  
 
 **Guru-ji's Warning:**  
 *"Check kar le bhai! Kya tujhe yeh sab bina chat sheet ke karna aa gaya hai?  
@@ -341,10 +377,13 @@
 - ingest.py se files load, chunk, embed, DB store karna (code + PDF dono)?  
 - Vector DB load karke RetrievalQA chain banana?  
 - Streamlit signup/login aur chat UI banana?  
+- Source documents display karna?  
 - RunnableWithMessageHistory se memory add karna?  
 - Streaming aur reset implement karna?  
+- Logout button add karna?  
 - Multi‑user isolation test karna?  
 - MySQL PDF se questions answer ho rahe hain?  
+- Code files se questions answer ho rahe hain?  
 - Final project structure README se match karna?  
 
 Agar inme se ek bhi cheez mein doubt hai ya confuse hai, toh chup chaap peeche ja aur wapas execute kar. Aage badhne ka koi fayda nahi agar basics hile hue hain!"*
