@@ -48,7 +48,7 @@ Ek AI-powered tool jo tumhare code repository ki documentation, code comments, R
 4. **Practical Takeaway:** Keywords: `python -m venv venv`, `source venv/bin/activate` (or `venv\Scripts\activate`). Virtual env ensures every project has its own clean space.
 
 **Level 0.2: Ollama – Code Samajhne Wala Dimag**  
-1. **Task:** Ollama daemon start karo (agar already running nahi hai). `ollama pull llama3.2` run karo. Phir terminal me `ollama run llama3.2` se test karo “What is a Python decorator?”.  
+1. **Task:** Ollama daemon start karo (agar already running nahi hai). `ollama pull mistral:7b` run karo. Phir terminal me `ollama run mistral:7b` se test karo “What is a Python decorator?”.  
 2. **Logic:** Ollama runs the LLM locally – no codebase leaves your machine.  
 3. **Definition of Done:** You get a decent explanation from the model in the terminal.  
 4. **Practical Takeaway:** Keywords: `ollama serve`, `ollama pull`, `ollama run`. The model must be downloaded and running before LangChain can use it.
@@ -72,7 +72,7 @@ Ek AI-powered tool jo tumhare code repository ki documentation, code comments, R
 4. **Practical Takeaway:** Keywords: `LANGCHAIN_TRACING_V2`, `LANGCHAIN_API_KEY`. Tracing is key for debugging LLM apps.
 
 **🔥 COMBO TASK (Level 0.5):**  
-1. **Task:** Inside venv, write `test_env.py` that imports `ChatOllama` from `langchain_community.chat_models`, creates `llm = ChatOllama(model="llama3.2")`, invokes `llm.invoke("What is a unit test?")`, prints response. Run the script.  
+1. **Task:** Inside venv, write `test_env.py` that imports `ChatOllama` from `langchain_community.chat_models`, creates `llm = ChatOllama(model="mistral:7b")`, invokes `llm.invoke("What is a unit test?")`, prints response. Run the script.  
 2. **Logic:** Combines environment setup, Ollama connection, and LangSmith tracing.  
 3. **Definition of Done:** Terminal prints answer; LangSmith dashboard shows a trace with the prompt and output.  
 4. **Practical Takeaway:** You now have a working local LLM with full observability.
@@ -83,7 +83,7 @@ Ek AI-powered tool jo tumhare code repository ki documentation, code comments, R
 *(Covers Module 1 invoke & Module 2 basics)*
 
 **Level 1.1: LangChain Se Pehla Sawaal**  
-1. **Task:** Create script `first_code_chat.py`. Use `ChatOllama` with `llama3.2`. Invoke `llm.invoke("What is dependency injection in programming?")`. Print response.  
+1. **Task:** Create script `first_code_chat.py`. Use `ChatOllama` with `mistral:7b`. Invoke `llm.invoke("What is dependency injection in programming?")`. Print response.  
 2. **Logic:** `.invoke()` sends the prompt; the model returns an `AIMessage`.  
 3. **Definition of Done:** Terminal prints a technical answer.  
 4. **Practical Takeaway:** Keywords: `ChatOllama`, `.invoke()`. First step to talk to LLM programmatically.
@@ -188,7 +188,7 @@ Ek AI-powered tool jo tumhare code repository ki documentation, code comments, R
 4. **Practical Takeaway:** Keywords: `RecursiveCharacterTextSplitter`. Chunking is crucial for search quality.
 
 **Level 4.3: Embedding – Code Semantics Ko Number Bana**  
-1. **Task:** Instantiate `OllamaEmbeddings` with `llama3.2`. Test on a sample chunk: get its vector, print the length.  
+1. **Task:** Instantiate `OllamaEmbeddings` with `mistral:7b`. Test on a sample chunk: get its vector, print the length.  
 2. **Logic:** Embeddings capture code semantics.  
 3. **Definition of Done:** Vector length is constant (e.g., 3072).  
 4. **Practical Takeaway:** Keywords: `OllamaEmbeddings`. Local embeddings keep your code private.
