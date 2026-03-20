@@ -154,22 +154,73 @@ The assistant will answer using the content from your repository.
 
 ```
 codesarthi/
-├── .env                     # Environment variables (LangSmith keys)
-├── .gitignore               # Ignore venv, chroma_code, .env, etc.
-├── requirements.txt         # Python dependencies
-├── README.md                # This file
-├── auth_db.py               # User authentication with SQLite
-├── ingest.py                # Document loader, chunking, embedding, vector store
-├── app.py                   # Streamlit UI (login, chat, streaming, reset)
-├── repo/                    # Your codebase files (add yours here)
+├── .env
+├── .gitignore
+├── requirements.txt
+├── README.md
+├── auth_db.py
+├── ingest.py
+├── app.py
+├── repo/
 │   ├── README.md
 │   ├── auth.py
 │   └── user_service.py
-├── data/                    # Additional PDFs (optional)
+├── data/
 │   └── sample.pdf
-├── chroma_code/             # Vector database (created by ingest.py – gitignored)
-└── users.db                 # SQLite user database (created at runtime – gitignored)
+├── chroma_code/
+└── users.db
 ```
+
+### 🗂️ File & Folder Breakdown
+
+**`.env`**  
+Yahan tumhare secret keys aur environment variables store hote hain – jaise LangSmith API key, tracing endpoint, aur project name. Ye file kabhi bhi GitHub pe push nahi karni chahiye. Agar LangSmith use nahi karna, toh ye file optional hai – app bina iske bhi chalega.
+
+**`.gitignore`**  
+Ye file Git ko batati hai ki kaunse folders aur files ko ignore karna hai jab tum code push karo. Isme `venv/`, `chroma_code/`, `.env`, aur `users.db` listed hote hain – kyunki ye sab ya toh sensitive hain ya locally generate hote hain, inhe repo mein nahi rakhna chahiye.
+
+**`requirements.txt`**  
+Is file mein saare Python packages listed hain jo is project ko chalane ke liye chahiye – jaise `langchain`, `chromadb`, `streamlit`, `pypdf`, etc. Koi bhi naya developer sirf `pip install -r requirements.txt` run karke poora environment set up kar sakta hai.
+
+**`README.md`**  
+Ye wahi file hai jo tum abhi padh rahe ho. Isme project ka overview, setup steps, sample queries, aur project structure explain kiya gaya hai. Ye kisi bhi naye developer ke liye pehla stop hona chahiye.
+
+**`auth_db.py`**  
+Is file mein user authentication ka poora logic hai. Ye SQLite database use karke users ke accounts manage karta hai – signup, login, aur password hashing sab yahan hota hai. Har user ka ek alag session hota hai taaki conversations mix na hon.
+
+**`ingest.py`**  
+Ye sabse pehle run karne wali file hai – ek baar setup ke time. Ye `repo/` aur `data/` folders ke saare files ko load karta hai, unhe chhote-chhote chunks mein todta hai, har chunk ka embedding banata hai (Ollama se), aur sab kuch Chroma vector database mein save kar deta hai. Jab tak ye nahi chalega, assistant ke paas koi knowledge nahi hogi.
+
+**`app.py`**  
+Ye main Streamlit application file hai jo browser mein UI render karti hai. Isme login form, chat interface, streaming responses, aur "New Thread" reset button sab kuch hai. Ye `auth_db.py` se user verify karta hai aur Chroma DB se answers retrieve karta hai.
+
+---
+
+**`repo/` folder**  
+Yahan tumhara actual codebase jaata hai – jo bhi files tum assistant ko samjhana chahte ho. By default kuch sample files hain:
+
+- **`repo/README.md`** – Sample project ka overview document. Assistant isse padh ke project ke baare mein high-level questions answer kar sakta hai.
+- **`repo/auth.py`** – Ek sample authentication module jisme login, logout, aur token validation ka code hai. Assistant isse padh ke "How does login work?" jaisi queries handle karta hai.
+- **`repo/user_service.py`** – Ek sample service file jisme user creation, fetching, aur password hashing ka logic hai. Assistant isse use karke user-related questions answer karta hai.
+
+> 💡 Tum apni khud ki files yahan rakh sakte ho – `.py`, `.md`, ya koi bhi text-based file. `ingest.py` dobara run karo aur assistant tumhari nayi files bhi samjhega.
+
+---
+
+**`data/` folder**  
+Yahan additional PDF documents rakh sakte ho – jaise coding standards, architecture docs, onboarding guides, ya koi bhi internal documentation.
+
+- **`data/sample.pdf`** – Ek example PDF file jo demonstrate karta hai ki assistant PDF content se bhi answers de sakta hai.
+
+> 💡 Koi bhi PDF yahan daalo, `ingest.py` run karo – assistant usse bhi padh lega.
+
+---
+
+**`chroma_code/` folder** *(auto-generated, gitignored)*  
+Ye folder `ingest.py` run karne ke baad automatically banta hai. Isme saare document chunks ke vector embeddings stored hote hain. Ye tumhara local vector database hai – isko manually edit ya delete mat karo. Agar dobara ingest karna ho toh pehle is folder ko delete karo, phir `ingest.py` run karo.
+
+**`users.db`** *(auto-generated, gitignored)*  
+Ye SQLite database file app pehli baar run hone par automatically banti hai. Isme registered users ke credentials aur unki chat history store hoti hai. Har user ka conversation alag-alag save hota hai taaki ek user doosre ki history na dekh sake.
 
 ---
 
