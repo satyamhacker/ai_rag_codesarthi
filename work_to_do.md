@@ -10,10 +10,10 @@
 2. **Logic:** Python projects ke liye isolation zaroori hai – dependencies clash na karein.  
 3. **Definition of Done:** Terminal prompt me `(venv)` dikhe.
 
-**Level 1.2: Dependencies – LangChain, Streamlit, aur Saathi**
+**Level 1.2: Dependencies – LangChain, Streamlit, Jupyter, aur Saathi**
 
-1. **Task:** `requirements.txt` file banao aur usme saari libraries likho: `langchain`, `langchain-community`, `langchain-chroma`, `langchain-ollama`, `python-dotenv`, `streamlit`, `pypdf`, `unstructured`, `chromadb`. Phir `pip install -r requirements.txt` chalao.  
-2. **Logic:** Modular installs keep environment light. `langchain-ollama` specifically Ollama integration ke liye chahiye.  
+1. **Task:** `requirements.txt` file banao aur usme saari libraries likho: `langchain`, `langchain-community`, `langchain-chroma`, `langchain-ollama`, `python-dotenv`, `streamlit`, `pypdf`, `unstructured`, `chromadb`, `jupyter`. Phir `pip install -r requirements.txt` chalao.  
+2. **Logic:** Modular installs keep environment light. `langchain-ollama` specifically Ollama integration ke liye chahiye. `jupyter` interactive development ke liye.  
 3. **Definition of Done:** `pip list` mein saari packages dikhein.
 
 **Level 1.3: Ollama – Local LLM Ka Engine**
@@ -24,23 +24,28 @@
 
 **Level 1.4: .gitignore – Sensitive Files Ko Chhupao**
 
-1. **Task:** `.gitignore` file banao aur inhe add karo: `venv/`, `.env`, `chroma_code/`, `users.db`, `code_history.db`, `__pycache__/`, `*.pyc`.  
-2. **Logic:** Ye files ya toh sensitive hain (`.env`, `users.db`) ya locally generate hoti hain – inhe repo mein nahi rakhna chahiye.  
+1. **Task:** `.gitignore` file banao aur inhe add karo: `venv/`, `.env`, `chroma_code/`, `users.db`, `code_history.db`, `__pycache__/`, `*.pyc`, `.ipynb_checkpoints/`.  
+2. **Logic:** Ye files ya toh sensitive hain (`.env`, `users.db`) ya locally generate hoti hain – inhe repo mein nahi rakhna chahiye. `.ipynb_checkpoints/` Jupyter ke temporary files hain.  
 3. **Definition of Done:** `git status` mein ye files ignored dikhein.
 
 **Level 1.5: LangSmith – CCTV Lagao (Optional)**
 
 1. **Task:** `.env` file banao. Usme `LANGCHAIN_TRACING_V2=true`, `LANGCHAIN_ENDPOINT=https://api.smith.langchain.com`, `LANGCHAIN_API_KEY=ls__your_key_here`, `LANGCHAIN_PROJECT=codesarthi` daalo.  
 2. **Logic:** Har LLM call trace hoti hai – debugging aasan. Ye optional hai – app bina iske bhi chalega.  
-3. **Definition of Done:** Baad mein `app.py` run karne par LangSmith dashboard pe traces dikhe (agar setup kiya).
+3. **Definition of Done:** Baad mein Jupyter notebooks run karne par LangSmith dashboard pe traces dikhe (agar setup kiya).
 
 **🔥 COMBO TASK (Level 1.6):**  
-1. **Task:** Ek chhota Python script (e.g., `test_env.py`) banao jo `ChatOllama` import kare, `mistral:7b` se invoke kare "What is a unit test?", aur response print kare. Script run karo.  
-2. **Logic:** Sab components ek saath kaam kar rahe hain ya nahi verify karo – Ollama, LangChain, Python environment.  
-3. **Definition of Done:** Terminal pe answer aaye; LangSmith trace dikhe (agar setup kiya).
+1. **Task:** Ek Jupyter Notebook `test_env.ipynb` banao. Isme cells likho:
+   - Cell 1: `from langchain_community.llms import ChatOllama` import karo
+   - Cell 2: `llm = ChatOllama(model="mistral:7b")` instantiate karo
+   - Cell 3: `response = llm.invoke("What is a unit test?")` invoke karo
+   - Cell 4: `print(response)` print karo
+   Notebook run karo aur output dekho.  
+2. **Logic:** Sab components ek saath kaam kar rahe hain ya nahi verify karo – Ollama, LangChain, Python environment, Jupyter.  
+3. **Definition of Done:** Notebook mein answer aaye; LangSmith trace dikhe (agar setup kiya).
 
 **Practical Takeaway:**  
-- Keywords: `virtual environment`, `pip install`, `ollama serve`, `ollama pull`, `.gitignore`, `.env`, `LANGCHAIN_TRACING_V2`.  
+- Keywords: `virtual environment`, `pip install`, `ollama serve`, `ollama pull`, `.gitignore`, `.env`, `jupyter notebook`, `LANGCHAIN_TRACING_V2`.  
 - Why: Ye foundation hai – bina iske kuch bhi nahi chalega.
 
 ---
@@ -68,12 +73,18 @@
 3. **Definition of Done:** Script run karo, ek test user register karo, login verify karo – `users.db` file ban jaaye.
 
 **🔥 COMBO TASK (Level 2.3):**  
-1. **Task:** `auth_db.py` ke functions ko use karke ek quick test script likho. Register a user, then try to login with correct and wrong password. Print messages for each.  
+1. **Task:** Ek Jupyter Notebook `auth_test.ipynb` banao. Isme cells likho:
+   - Cell 1: `from auth_db import init_db, register_user, verify_user` import karo
+   - Cell 2: `init_db()` call karo
+   - Cell 3: `register_user("test@example.com", "password123")` call karo
+   - Cell 4: `result = verify_user("test@example.com", "password123")` call karo aur print karo
+   - Cell 5: `result = verify_user("test@example.com", "wrongpassword")` call karo aur print karo
+   Notebook run karo aur verify karo.  
 2. **Logic:** Verify that hashing and DB operations work correctly.  
-3. **Definition of Done:** Correct password pe "Login successful" message, wrong pe "Invalid credentials" message.
+3. **Definition of Done:** Correct password pe user ID return ho, wrong pe None return ho.
 
 **Practical Takeaway:**  
-- Keywords: `sqlite3`, `hashlib.sha256`, `INSERT`, `SELECT`, `CREATE TABLE`.  
+- Keywords: `sqlite3`, `hashlib.sha256`, `INSERT`, `SELECT`, `CREATE TABLE`, `jupyter notebook`.  
 - Why: Multi‑user support ke liye user isolation zaroori hai.
 
 ---
@@ -83,42 +94,59 @@
 
 **Level 3.1: Files Load Karo**
 
-1. **Task:** `ingest.py` banao. Pehle `repo/` aur `pdf_file/` se sab files load karo:  
-   - Markdown files ke liye `DirectoryLoader` with `glob="**/*.md"`  
-   - Python files ke liye `DirectoryLoader` with `glob="**/*.py"`  
-   - PDF files ke liye `PyPDFLoader` – path: `pdf_file/mysql_cheatsheet.pdf`  
-   - Saari files ek list mein collect karo aur print total count.  
+1. **Task:** Ek Jupyter Notebook `ingest.ipynb` banao. Isme cells likho:
+   - Cell 1: Imports – `DirectoryLoader`, `PyPDFLoader`, `RecursiveCharacterTextSplitter`, `OllamaEmbeddings`, `Chroma`
+   - Cell 2: Load markdown files from `repo/` using `DirectoryLoader` with `glob="**/*.md"`
+   - Cell 3: Load Python files from `repo/` using `DirectoryLoader` with `glob="**/*.py"`
+   - Cell 4: Load PDF from `pdf_file/mysql_cheatsheet.pdf` using `PyPDFLoader`
+   - Cell 5: Combine all documents in a list aur print total count
+   Notebook run karo.  
 2. **Logic:** Different loaders for different file types. This is the first step of RAG.  
 3. **Definition of Done:** Print total documents loaded – count should match files (3 from repo + 1 PDF).
 
 **Level 3.2: Chunks Banao**
 
-1. **Task:** `RecursiveCharacterTextSplitter` use karo with `chunk_size=1500`, `chunk_overlap=200`. Saari documents ko split karo.  
+1. **Task:** `ingest.ipynb` mein naya cell likho:
+   - Cell 6: `RecursiveCharacterTextSplitter` use karo with `chunk_size=1500`, `chunk_overlap=200`
+   - Cell 7: Saari documents ko split karo aur chunks list banao
+   - Cell 8: Print chunk count
+   Notebook run karo.  
 2. **Logic:** Overlap ensures context continuity between chunks. Smaller chunks = better retrieval accuracy.  
 3. **Definition of Done:** Number of chunks > original document count. Print chunk count.
 
 **Level 3.3: Embeddings Banao**
 
-1. **Task:** `OllamaEmbeddings` with `model="mistral:7b"` instantiate karo. Ek sample chunk ka vector generate karo aur length print karo.  
+1. **Task:** `ingest.ipynb` mein naya cell likho:
+   - Cell 9: `OllamaEmbeddings` with `model="mistral:7b"` instantiate karo
+   - Cell 10: Ek sample chunk ka vector generate karo
+   - Cell 11: Vector length print karo
+   Notebook run karo.  
 2. **Logic:** Embeddings capture code semantics – similar code chunks will have similar vectors.  
 3. **Definition of Done:** Vector length constant (e.g., 3072). Verify embedding works without errors.
 
 **Level 3.4: Chroma DB Mein Save Karo**
 
-1. **Task:** `Chroma.from_documents` use karo – pass chunks, embeddings, `persist_directory="./chroma_code"`, collection name `"code_knowledge"`.  
+1. **Task:** `ingest.ipynb` mein naya cell likho:
+   - Cell 12: `Chroma.from_documents` use karo – pass chunks, embeddings, `persist_directory="./chroma_code"`, collection name `"code_knowledge"`
+   - Cell 13: Print success message
+   Notebook run karo.  
 2. **Logic:** Vector store disk par persist hota hai – isse baad mein quickly load kar sakte ho.  
 3. **Definition of Done:** `chroma_code/` folder ban jaaye with vector data inside.
 
 **🔥 COMBO TASK (Level 3.5):**  
-1. **Task:** Load the persisted DB back (using `Chroma` constructor with same `persist_directory`), perform two similarity searches:  
-   - `"how does authentication work?"` – should return chunks from `auth.py`  
-   - `"how to use JOIN in MySQL?"` – should return chunks from `mysql_cheatsheet.pdf`  
-   Print top 3 chunks for each with source file names.  
+1. **Task:** `ingest.ipynb` mein naya cell likho:
+   - Cell 14: Load the persisted DB back using `Chroma` constructor with same `persist_directory`
+   - Cell 15: Create retriever with `search_kwargs={"k": 3}`
+   - Cell 16: Perform similarity search – `"how does authentication work?"`
+   - Cell 17: Print top 3 chunks with source file names
+   - Cell 18: Perform similarity search – `"how to use JOIN in MySQL?"`
+   - Cell 19: Print top 3 chunks with source file names
+   Notebook run karo.  
 2. **Logic:** Verify that both code and PDF retrieval works correctly.  
 3. **Definition of Done:** Retrieved chunks contain relevant content from respective sources. Source documents clearly show which file they came from.
 
 **Practical Takeaway:**  
-- Keywords: `DirectoryLoader`, `PyPDFLoader`, `RecursiveCharacterTextSplitter`, `OllamaEmbeddings`, `Chroma.from_documents`, `similarity_search`.  
+- Keywords: `DirectoryLoader`, `PyPDFLoader`, `RecursiveCharacterTextSplitter`, `OllamaEmbeddings`, `Chroma.from_documents`, `similarity_search`, `jupyter notebook`.  
 - Why: Without ingestion, assistant has no knowledge. This is the foundation of RAG.
 
 ---
@@ -128,38 +156,53 @@
 
 **Level 4.1: Vector DB Load Karo**
 
-1. **Task:** `app.py` mein (after user login) Chroma DB load karo using `persist_directory="./chroma_code"` and same embedding model `OllamaEmbeddings(model="mistral:7b")`.  
-2. **Logic:** DB already built from ingest.py, just connect to it.  
+1. **Task:** Ek Jupyter Notebook `rag_chain_test.ipynb` banao. Isme cells likho:
+   - Cell 1: Imports – `Chroma`, `OllamaEmbeddings`, `ChatOllama`, `RetrievalQA`
+   - Cell 2: Load Chroma DB using `persist_directory="./chroma_code"` and same embedding model
+   - Cell 3: Print collection count to verify
+   Notebook run karo.  
+2. **Logic:** DB already built from ingest.ipynb, just connect to it.  
 3. **Definition of Done:** DB object loads without error. Verify by checking collection count.
 
 **Level 4.2: Retriever Banao**
 
-1. **Task:** `.as_retriever(search_kwargs={"k": 3})` use karo – ye top 3 most relevant chunks retrieve karega.  
+1. **Task:** `rag_chain_test.ipynb` mein naya cell likho:
+   - Cell 4: `.as_retriever(search_kwargs={"k": 3})` use karo
+   - Cell 5: Test retriever with a sample query
+   Notebook run karo.  
 2. **Logic:** Retriever is the bridge between user query and vector DB.  
 3. **Definition of Done:** Retriever object ban jaaye. Test with a sample query.
 
 **Level 4.3: LLM Connect Karo**
 
-1. **Task:** `ChatOllama` with model `"mistral:7b"` instantiate karo. Temperature, top_p settings optional hain.  
+1. **Task:** `rag_chain_test.ipynb` mein naya cell likho:
+   - Cell 6: `ChatOllama` with model `"mistral:7b"` instantiate karo
+   - Cell 7: `llm.invoke("test")` call karo aur output print karo
+   Notebook run karo.  
 2. **Logic:** Local LLM engine – ye actual answers generate karega.  
 3. **Definition of Done:** `llm.invoke("test")` works without error.
 
 **Level 4.4: RetrievalQA Chain Banao**
 
-1. **Task:** `RetrievalQA.from_chain_type(llm=llm, retriever=retriever, return_source_documents=True)` use karo.  
+1. **Task:** `rag_chain_test.ipynb` mein naya cell likho:
+   - Cell 8: `RetrievalQA.from_chain_type(llm=llm, retriever=retriever, return_source_documents=True)` use karo
+   - Cell 9: Print chain object
+   Notebook run karo.  
 2. **Logic:** This chain automatically retrieves context and generates answer. `return_source_documents=True` ensures we know which files were used.  
 3. **Definition of Done:** Chain object ready. Test with hardcoded query.
 
 **🔥 COMBO TASK (Level 4.5):**  
-1. **Task:** Do hardcoded queries test karo:  
-   - `qa_chain.invoke({"query": "What does auth.py do?"})` – answer from `repo/auth.py`  
-   - `qa_chain.invoke({"query": "What is the syntax for SELECT in MySQL?"})` – answer from `pdf_file/mysql_cheatsheet.pdf`  
-   Print answer and source documents for both.  
+1. **Task:** `rag_chain_test.ipynb` mein naya cell likho:
+   - Cell 10: `qa_chain.invoke({"query": "What does auth.py do?"})` call karo
+   - Cell 11: Print answer aur source documents
+   - Cell 12: `qa_chain.invoke({"query": "What is the syntax for SELECT in MySQL?"})` call karo
+   - Cell 13: Print answer aur source documents
+   Notebook run karo.  
 2. **Logic:** Verify RAG works for both code and PDF sources.  
 3. **Definition of Done:** Answers based on correct source files. Source documents clearly show which file was used.
 
 **Practical Takeaway:**  
-- Keywords: `Chroma`, `as_retriever`, `RetrievalQA.from_chain_type`, `return_source_documents`, `ChatOllama`.  
+- Keywords: `Chroma`, `as_retriever`, `RetrievalQA.from_chain_type`, `return_source_documents`, `ChatOllama`, `jupyter notebook`.  
 - Why: RAG is the core of the assistant – it combines retrieval + generation.
 
 ---
@@ -199,7 +242,7 @@
 3. **Definition of Done:** Answer appears, sources visible, no errors.
 
 **Practical Takeaway:**  
-- Keywords: `st.session_state`, `st.chat_input`, `st.chat_message`, `st.tabs`, `st.expander`.  
+- Keywords: `st.session_state`, `st.chat_input`, `st.chat_message`, `st.tabs`, `st.expander`, `streamlit`.  
 - Why: UI makes the assistant usable and transparent.
 
 ---
@@ -230,17 +273,21 @@
 
 **Level 6.4: Multi‑Turn Test**
 
-1. **Task:** User se do questions puchho jo pehle wale par depend karte hain (e.g., "What is a MySQL JOIN?" then "Can you show me an example of LEFT JOIN?").  
+1. **Task:** Ek Jupyter Notebook `memory_test.ipynb` banao. Isme cells likho:
+   - Cell 1: Imports aur setup
+   - Cell 2: User se do questions puchho jo pehle wale par depend karte hain (e.g., "What is a MySQL JOIN?" then "Can you show me an example of LEFT JOIN?")
+   - Cell 3: Verify ki second answer mentions "LEFT JOIN" specifically
+   Notebook run karo.  
 2. **Logic:** Second answer should reference first question's context.  
 3. **Definition of Done:** Context preserved. Second answer mentions "LEFT JOIN" specifically.
 
 **🔥 COMBO TASK (Level 6.5):**  
-1. **Task:** Simulate a full conversation (3 turns), stop app, restart, login again – ask a follow‑up question. Bot should remember previous conversation. Check SQLite DB to see stored messages.  
+1. **Task:** Simulate a full conversation (3 turns) in Jupyter, stop app, restart, login again – ask a follow‑up question. Bot should remember previous conversation. Check SQLite DB to see stored messages.  
 2. **Logic:** Persistence works across restarts.  
 3. **Definition of Done:** Memory works across restarts. `code_history.db` contains all messages.
 
 **Practical Takeaway:**  
-- Keywords: `RunnableWithMessageHistory`, `SQLChatMessageHistory`, `session_id`, `get_session_history`.  
+- Keywords: `RunnableWithMessageHistory`, `SQLChatMessageHistory`, `session_id`, `get_session_history`, `jupyter notebook`.  
 - Why: Memory is essential for natural conversations.
 
 ---
@@ -277,7 +324,7 @@
 3. **Definition of Done:** Streaming smooth, reset works, logout works, user isolation verified.
 
 **Practical Takeaway:**  
-- Keywords: `st.write_stream`, `.stream()`, `.clear()`, `st.session_state`, `st.sidebar`.  
+- Keywords: `st.write_stream`, `.stream()`, `.clear()`, `st.session_state`, `st.sidebar`, `streamlit`.  
 - Why: Streaming and reset are standard in modern chatbots.
 
 ---
@@ -324,9 +371,13 @@
    ├── .gitignore
    ├── requirements.txt
    ├── README.md
-   ├── auth_db.py            ← User signup, login, password hashing
-   ├── ingest.py             ← One-time data ingestion script
    ├── app.py                ← Main Streamlit app
+   ├── auth_db.py            ← User signup, login, password hashing
+   ├── ingest.ipynb          ← Data ingestion notebook
+   ├── test_env.ipynb        ← Environment testing notebook
+   ├── rag_chain_test.ipynb  ← RAG chain testing notebook
+   ├── auth_test.ipynb       ← Authentication testing notebook
+   ├── memory_test.ipynb     ← Memory testing notebook
    ├── repo/                 ← Your codebase goes here
    │   ├── README.md
    │   ├── auth.py
@@ -338,16 +389,16 @@
    └── code_history.db       ← auto-generated, gitignored
    ```
 2. **Logic:** README mein defined structure se match karna zaroori hai.  
-3. **Definition of Done:** Sab files present, `chroma_code/`, `users.db`, `code_history.db` gitignored.
+3. **Definition of Done:** Sab files present, `chroma_code/`, `users.db`, `code_history.db`, `.ipynb_checkpoints/` gitignored.
 
 **🔥 COMBO TASK (Level 8.6):**  
 1. **Task:** Run all features together in sequence:  
-   - Signup → Login → multi‑turn RAG conversation (code + PDF) → MySQL PDF query → reset → new conversation → streaming test → logout → login as different user → verify isolation → check LangSmith traces (if setup).  
+   - Run `ingest.ipynb` → Run `test_env.ipynb` → Run `auth_test.ipynb` → Run `rag_chain_test.ipynb` → Run `memory_test.ipynb` → Signup → Login → multi‑turn RAG conversation (code + PDF) → MySQL PDF query → reset → new conversation → streaming test → logout → login as different user → verify isolation → check LangSmith traces (if setup).  
 2. **Logic:** Full system validation.  
 3. **Definition of Done:** All features work, no errors, traces visible, user isolation verified.
 
 **Practical Takeaway:**  
-- Keywords: Full architecture – RAG + Memory + UI + Observability + Multi-user.  
+- Keywords: Full architecture – RAG + Memory + UI + Observability + Multi-user + Jupyter Notebooks.  
 - Why: This is exactly how enterprise assistants are built.
 
 ---
@@ -366,6 +417,7 @@ You built a complete production‑ready **codebase assistant** that:
 - ✅ Uses LangSmith for full observability (optional)  
 - ✅ Proper `.gitignore` for sensitive files  
 - ✅ Shows source documents for transparency  
+- ✅ Uses Jupyter Notebooks for interactive development and testing  
 
 **Guru-ji's Warning:**  
 *"Check kar le bhai! Kya tujhe yeh sab bina chat sheet ke karna aa gaya hai?  
@@ -374,8 +426,11 @@ You built a complete production‑ready **codebase assistant** that:
 - `.gitignore` properly set karna?  
 - Sample files structure set karna (`repo/` aur `pdf_file/`)?  
 - auth_db.py mein hashed passwords store karna aur signup implement karna?  
-- ingest.py se files load, chunk, embed, DB store karna (code + PDF dono)?  
-- Vector DB load karke RetrievalQA chain banana?  
+- `ingest.ipynb` se files load, chunk, embed, DB store karna (code + PDF dono)?  
+- `test_env.ipynb` se environment verify karna?  
+- `auth_test.ipynb` se authentication test karna?  
+- `rag_chain_test.ipynb` se RAG chain test karna?  
+- `memory_test.ipynb` se memory test karna?  
 - Streamlit signup/login aur chat UI banana?  
 - Source documents display karna?  
 - RunnableWithMessageHistory se memory add karna?  

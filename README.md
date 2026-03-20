@@ -4,6 +4,7 @@
 [![LangChain](https://img.shields.io/badge/langchain-0.3.0+-green.svg)](https://python.langchain.com/)
 [![Streamlit](https://img.shields.io/badge/streamlit-1.35+-red.svg)](https://streamlit.io/)
 [![Ollama](https://img.shields.io/badge/ollama-0.1.30+-orange.svg)](https://ollama.com/)
+[![Jupyter](https://img.shields.io/badge/jupyter-notebook-orange.svg)](https://jupyter.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **A private, local, and intelligent assistant for your codebase.**  
@@ -65,6 +66,7 @@ graph TD
 | **Streamlit** | Interactive web UI |
 | **SQLite** | User accounts and chat history persistence |
 | **PyPDF / Unstructured** | Document parsing (PDF, markdown, etc.) |
+| **Jupyter Notebook** | Interactive development and testing |
 | **LangSmith** | Optional observability and tracing |
 
 ---
@@ -75,6 +77,7 @@ Before you begin, make sure you have:
 
 - Python 3.10 or higher
 - [Ollama](https://ollama.com/) installed and running in the background
+- [Jupyter Notebook](https://jupyter.org/install) installed
 - Git (optional, for cloning)
 
 ---
@@ -97,6 +100,7 @@ venv\Scripts\activate         # On Windows
 ### 3. Install dependencies
 ```bash
 pip install -r requirements.txt
+pip install jupyter           # For Jupyter Notebook support
 ```
 
 > The `requirements.txt` includes: `langchain`, `langchain-community`, `langchain-chroma`, `langchain-ollama`, `python-dotenv`, `streamlit`, `pypdf`, `unstructured`, `chromadb`.
@@ -121,20 +125,52 @@ You can skip this – the app will still work without it.
 Place your source files and READMEs in the `repo/` folder, and PDF documents in the `pdf_file/` folder.  
 The sample project already contains a few files for testing, including `mysql_cheatsheet.pdf`.
 
-### 7. Ingest the data
-This step creates the vector database (takes a few minutes on first run):
+### 7. Ingest the data (using Jupyter Notebook)
+Create a Jupyter Notebook `ingest.ipynb` and run the ingestion cells. This creates the vector database (takes a few minutes on first run):
 ```bash
-python ingest.py
+jupyter notebook ingest.ipynb
 ```
 You should see messages like `Loaded X pages`, `Created Y chunks`, `Vector store created`.
 
-> ⚠️ If you add new files to `repo/` or `pdf_file/`, delete the `chroma_code/` folder and re-run `ingest.py` to rebuild the vector store.
+> ⚠️ If you add new files to `repo/` or `pdf_file/`, delete the `chroma_code/` folder and re-run the ingestion notebook to rebuild the vector store.
 
 ### 8. Run the assistant
 ```bash
 streamlit run app.py
 ```
 Open your browser at http://localhost:8501.
+
+---
+
+## 📓 Jupyter Notebook Workflow
+
+The project uses Jupyter Notebooks for development, testing, and data ingestion:
+
+### **`ingest.ipynb`** – Data Ingestion Notebook
+- Load files from `repo/` and `pdf_file/`
+- Split documents into chunks
+- Generate embeddings
+- Store in Chroma vector database
+- Test similarity search
+
+### **`test_env.ipynb`** – Environment Testing Notebook
+- Test Ollama connection
+- Test LangChain imports
+- Verify all dependencies
+- Test basic LLM invocation
+
+### **`rag_chain_test.ipynb`** – RAG Chain Testing Notebook
+- Load vector database
+- Create retriever
+- Build RetrievalQA chain
+- Test with sample queries
+- Verify source document retrieval
+
+### **`auth_test.ipynb`** – Authentication Testing Notebook
+- Test user registration
+- Test login with correct/wrong passwords
+- Verify password hashing
+- Check SQLite database
 
 ---
 
@@ -168,9 +204,12 @@ codesarthi/
 ├── .gitignore
 ├── requirements.txt
 ├── README.md
-├── auth_db.py            ← User signup, login, password hashing
-├── ingest.py             ← One-time data ingestion script
 ├── app.py                ← Main Streamlit app
+├── auth_db.py            ← User signup, login, password hashing
+├── ingest.ipynb          ← Data ingestion notebook
+├── test_env.ipynb        ← Environment testing notebook
+├── rag_chain_test.ipynb  ← RAG chain testing notebook
+├── auth_test.ipynb       ← Authentication testing notebook
 ├── repo/                 ← Your codebase goes here
 │   ├── README.md
 │   ├── auth.py
@@ -191,19 +230,32 @@ Yahan tumhare secret keys aur environment variables store hote hain – jaise La
 Ye file Git ko batati hai ki kaunse folders aur files ko ignore karna hai jab tum code push karo. Isme `venv/`, `chroma_code/`, `.env`, `users.db`, `code_history.db`, aur `__pycache__/` listed hote hain – kyunki ye sab ya toh sensitive hain ya locally generate hote hain, inhe repo mein nahi rakhna chahiye.
 
 **`requirements.txt`**  
-Is file mein saare Python packages listed hain jo is project ko chalane ke liye chahiye – `langchain`, `langchain-community`, `langchain-chroma`, `langchain-ollama`, `chromadb`, `streamlit`, `pypdf`, `unstructured`, `python-dotenv`. Koi bhi naya developer sirf `pip install -r requirements.txt` run karke poora environment set up kar sakta hai.
+Is file mein saare Python packages listed hain jo is project ko chalane ke liye chahiye – `langchain`, `langchain-community`, `langchain-chroma`, `langchain-ollama`, `chromadb`, `streamlit`, `pypdf`, `unstructured`, `python-dotenv`, `jupyter`. Koi bhi naya developer sirf `pip install -r requirements.txt` run karke poora environment set up kar sakta hai.
 
 **`README.md`**  
 Ye wahi file hai jo tum abhi padh rahe ho. Isme project ka overview, setup steps, sample queries, aur project structure explain kiya gaya hai. Ye kisi bhi naye developer ke liye pehla stop hona chahiye.
 
+**`app.py`**  
+Ye main Streamlit application file hai jo browser mein UI render karti hai. Isme signup/login tabs, chat interface, streaming responses, aur "New Thread" reset button sab kuch hai. Ye `auth_db.py` se user verify karta hai, Chroma DB se relevant chunks retrieve karta hai, aur `RunnableWithMessageHistory` se conversation memory maintain karta hai.
+
 **`auth_db.py`**  
 Is file mein user authentication ka poora logic hai. Ye SQLite database use karke users ke accounts manage karta hai – signup, login, aur password hashing sab yahan hota hai. Passwords plain text mein store nahi hote – `hashlib.sha256` se hash karke store hote hain. Har user ka ek alag session hota hai taaki conversations mix na hon.
 
-**`ingest.py`**  
-Ye sabse pehle run karne wali file hai – ek baar setup ke time. Ye `repo/` aur `pdf_file/` folders ke saare files ko load karta hai, unhe chhote-chhote chunks mein todta hai (`chunk_size=1500`, `chunk_overlap=200`), har chunk ka embedding banata hai (Ollama `mistral:7b` se), aur sab kuch Chroma vector database mein save kar deta hai. Jab tak ye nahi chalega, assistant ke paas koi knowledge nahi hogi.
+---
 
-**`app.py`**  
-Ye main Streamlit application file hai jo browser mein UI render karti hai. Isme signup/login tabs, chat interface, streaming responses, aur "New Thread" reset button sab kuch hai. Ye `auth_db.py` se user verify karta hai, Chroma DB se relevant chunks retrieve karta hai, aur `RunnableWithMessageHistory` se conversation memory maintain karta hai.
+**Jupyter Notebooks:**
+
+**`ingest.ipynb`** – Data Ingestion  
+Ye notebook `repo/` aur `pdf_file/` folders ke saare files ko load karta hai, unhe chhote-chhote chunks mein todta hai (`chunk_size=1500`, `chunk_overlap=200`), har chunk ka embedding banata hai (Ollama `mistral:7b` se), aur sab kuch Chroma vector database mein save kar deta hai. Jab tak ye nahi chalega, assistant ke paas koi knowledge nahi hogi.
+
+**`test_env.ipynb`** – Environment Testing  
+Ye notebook verify karta hai ki sab components properly installed hain – Ollama, LangChain, Python environment. Isme `ChatOllama` import karo, `mistral:7b` se invoke karo, aur response print karo.
+
+**`rag_chain_test.ipynb`** – RAG Chain Testing  
+Ye notebook Chroma DB load karta hai, retriever banata hai, RetrievalQA chain create karta hai, aur hardcoded queries se test karta hai. Do queries test karo – ek code se, ek PDF se.
+
+**`auth_test.ipynb`** – Authentication Testing  
+Ye notebook `auth_db.py` ke functions ko test karta hai. User register karo, correct aur wrong password se login try karo, aur verify karo ki hashing properly kaam kar rahi hai.
 
 ---
 
@@ -214,7 +266,7 @@ Yahan tumhara actual codebase jaata hai – jo bhi files tum assistant ko samjha
 - **`repo/auth.py`** – Ek sample authentication module jisme login, logout, aur token validation ka code hai. Assistant isse padh ke "How does login work?" jaisi queries handle karta hai.
 - **`repo/user_service.py`** – Ek sample service file jisme user creation, fetching, aur password hashing ka logic hai. Assistant isse use karke user-related questions answer karta hai.
 
-> 💡 Tum apni khud ki files yahan rakh sakte ho – `.py`, `.md`, ya koi bhi text-based file. `chroma_code/` delete karo, `ingest.py` dobara run karo – assistant tumhari nayi files bhi samjhega.
+> 💡 Tum apni khud ki files yahan rakh sakte ho – `.py`, `.md`, ya koi bhi text-based file. `chroma_code/` delete karo, `ingest.ipynb` dobara run karo – assistant tumhari nayi files bhi samjhega.
 
 ---
 
@@ -223,12 +275,12 @@ Yahan PDF documents rakh sakte ho – jaise cheatsheets, architecture docs, onbo
 
 - **`pdf_file/mysql_cheatsheet.pdf`** – MySQL commands aur syntax ka quick reference guide. Assistant isse padh ke MySQL-related questions answer karta hai – jaise SELECT queries, JOINs, data types, indexes, aur stored procedures.
 
-> 💡 Koi bhi PDF yahan daalo, `chroma_code/` delete karo, `ingest.py` run karo – assistant usse bhi padh lega.
+> 💡 Koi bhi PDF yahan daalo, `chroma_code/` delete karo, `ingest.ipynb` run karo – assistant usse bhi padh lega.
 
 ---
 
 **`chroma_code/` folder** *(auto-generated, gitignored)*  
-Ye folder `ingest.py` run karne ke baad automatically banta hai. Isme saare document chunks ke vector embeddings stored hote hain. Ye tumhara local vector database hai – isko manually edit mat karo. Agar dobara ingest karna ho toh pehle is folder ko delete karo, phir `ingest.py` run karo.
+Ye folder `ingest.ipynb` run karne ke baad automatically banta hai. Isme saare document chunks ke vector embeddings stored hote hain. Ye tumhara local vector database hai – isko manually edit mat karo. Agar dobara ingest karna ho toh pehle is folder ko delete karo, phir `ingest.ipynb` run karo.
 
 **`users.db`** *(auto-generated, gitignored)*  
 Ye SQLite database file app pehli baar run hone par automatically banti hai. Isme registered users ke credentials (hashed passwords) store hote hain. Har user ka account alag hota hai.
@@ -247,8 +299,9 @@ Agar tumne `repo/` ya `pdf_file/` mein naye files add kiye hain:
 rm -rf chroma_code/        # Linux/Mac
 rmdir /s /q chroma_code    # Windows
 
-# Step 2: Dobara ingest karo
-python ingest.py
+# Step 2: Dobara ingest karo (Jupyter Notebook mein)
+jupyter notebook ingest.ipynb
+# Run all cells in the notebook
 ```
 
 ---
@@ -277,6 +330,7 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 - Powered by [Ollama](https://ollama.com/) and [Mistral 7B](https://ollama.com/library/mistral)
 - UI by [Streamlit](https://streamlit.io/)
 - Vector database by [Chroma](https://www.trychroma.com/)
+- Interactive development with [Jupyter Notebook](https://jupyter.org/)
 
 ---
 
