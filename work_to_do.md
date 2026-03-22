@@ -49,7 +49,7 @@ Base LLMs ek "frozen box" mein hote hain. Unhe cutoff date ke baad ki duniya ka 
 * Stock market, medical news, ya elections jaise sensitive tasks fail ho jayenge.
 
 **3. Practical Tasks (The Mission)**
-* **Task 1:** Apne local machine pe **Ollama** start kar aur `qwen2.5` ya `llama3.1` model run kar terminal se.
+* **Task 1:** Apne local machine pe **Ollama** start kar aur `llama3.1:latest` model run kar terminal se.
 * **Task 2:** Model se ek aisi cheez pooch jo 2024 ke end mein ya 2025 mein hui ho (e.g., "Who won the 2024 US Election?" ya latest space mission).
 * **The Logic:** Dhyan se dekh response ko. Model ya toh hallucinate karega (jhoot bolega) ya gracefully mana karega. Note kar ki wo kaunsi cutoff date mention kar raha hai.
 * **🔥 THE COMBO TASK:** Model se current date pooch, aur phir pichle 2 ghante ki news. Jab wo mana kare, toh samajh le ki bina "haath-pair" (tools) ke ye model ek band kamre mein qaid hai.
@@ -73,7 +73,7 @@ Binding ka matlab hai LLM ko bata dena ki "Bhai, tere paas ye specific tools ava
 * Tool bind karne se LLM text ki jagah structured **JSON instruction** dena seekh jata hai.
 
 **3. Practical Tasks (The Mission)**
-* **Task 1:** Jupyter notebook mein `ChatOllama` initialize kar `langchain_community` se.
+* **Task 1:** Jupyter notebook mein `ChatOllama` initialize kar `langchain_community` se. Model name: `llama3.1:latest`.
 * **Task 2:** Ek fake tool list bana (List of objects) jisme ek `WikipediaQueryRun` tool ho.
 * **Task 3:** Model par ek specific method use kar (`bind_tools` flag wala) aur usme apni tool list pass kar.
 * **The Logic:** Ab model ko invoke kar same cutoff wale question se. Output mein `.content` check kar aur `.tool_calls` check kar. 
@@ -481,7 +481,7 @@ Bhai, yahan tune **Multi-Step Agentic Workflow** master kar liya. Keywords: `Str
 
 🏁 **MODULE 5 RECAP (Tera Status Report)**
 * **Siksha Summary:** Tune Playwright toolkit setup kiya, async browser operations handle kiye, CSS selectors se manual scraping ki, aur ek analytics agent banaya jo web data process karta hai.
-* **Guru-ji's Warning:** "Check kar le bhai! Kya tujhe `arun` aur `run` ka fark pata hai? Kya tune `nest_asyncio` lagaya? Agar agent 'JSON decode error' de raha hai, toh ghabra mat, wo web data ki complexity hai. Local LLM (Llama 3.2/3.3) upgrade kar agar performance slow hai. Level 4 tak sab done hai toh aage badh!"
+* **Guru-ji's Warning:** "Check kar le bhai! Kya tujhe `arun` aur `run` ka fark pata hai? Kya tune `nest_asyncio` lagaya? Agar agent 'JSON decode error' de raha hai, toh ghabra mat, wo web data ki complexity hai. `llama3.1:latest` tool calling support karta hai, toh performance issues pe model config check kar. Level 4 tak sab done hai toh aage badh!"
 
 ⚡ **GURUDAKSHINA (The Checkpoint):** Sare Levels clear hue? Screenshots taiyar rakh! Agar sab properly done hai toh type **'CONTINUE'** for the next grand project module.
 
@@ -503,7 +503,7 @@ Bar-bar PDF split aur embed karke paise aur time barbaad nahi karte. Hum purane 
 **3. Practical Tasks (The Mission)**
 * **Task 1:** VS Code mein naya notebook bana aur `.env` file load kar. Purane sections se Playwright initialization ka code le aao.
 * **Task 2:** `Chroma` class use karke existing database directory (`../../section5_rag_document/chroma_db`) ka path point kar.
-* **Task 3:** Embedding model hamesha wahi rakhna jo DB banate waqt tha (e.g., `llama3.2`).
+* **Task 3:** Embedding model hamesha wahi rakhna jo DB banate waqt tha (e.g., `llama3.1:latest`).
 * **The Logic:** Dhyan se dekh, yahan hum "Bypassing extraction/splitting" kar rahe hain. DB load hone ke baad, Agent ke bina ek simple similarity search maar: "what is bias testing".
 * **🔥 THE COMBO TASK:** Check kar ki kya bina PDF upload kiye tera Vector Store text return kar raha hai? Agar documents aa rahe hain, toh tera persistence connection successful hai.
 
