@@ -1,9 +1,4 @@
-Chal bhai, haath pair jod, terminal khol! Aaj real knowledge ki aag lagate hain. Theory ho gayi, ab practically haath gande karne ka time hai!
-
-Bhai, tere notes bohot bhari hain, par inme asli maza tab hai jab tu inko terminal pe phode. Maine tere saare raw notes ko analyze kar liya hai aur ek hardcore **Agentic AI Roadmap** taiyar kiya hai. 
-
-Dhyan se dekh, ye hai tera curriculum:
-
+llm course section --9, 10, 11...practical..
 ---
 
 ### 🗺️ PHASE 1: THE ROADMAP (Agentic Mastery)
