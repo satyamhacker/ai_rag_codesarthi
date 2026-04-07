@@ -218,12 +218,12 @@ Synchronous calls (Wait karo aur poora result lo) purane zamaane ki baat hai. LC
 - Task [1]: Apni chain pe pehle `.invoke()` chala. Note kar ki terminal kitni der hang hota hai final text print hone se pehle.
   The Logic: Yeh blocking/synchronous call hai.
 
-- Task [2]: Ab `.invoke()` ki jagah `.stream()` method chala. Dekh ki output kya data type return karta hai (Hint: Python generator hoga).
-  The Logic: API poore answer ka wait nahi karti, Server-Sent Events (SSE) mechanism se chunk by chunk data bhejti hai.
+  - Task [2]: Ab `.invoke()` ki jagah `.stream()` method chala. Dekh ki output kya data type return karta hai (Hint: Python generator hoga).
+    The Logic: API poore answer ka wait nahi karti, Server-Sent Events (SSE) mechanism se chunk by chunk data bhejti hai.
 
-  🔥 THE COMBO TASK:
-  **Combo Task:** Ek for-loop laga aur stream generator se "chunks" extract kar. Terminal par unhe real-time (type-writer effect) print karwa. Python ke `print` statement mein `flush` aur `end` parameters check kar aur apply kar.
-  **Challenge:** Agar tera app ek high-traffic FastAPI server pe deployed hai, toh tu `.invoke()` aur `.stream()` ki jagah kaunse async alternatives (`a`-prefixed) use karega taaki Event Loop block na ho?
+    🔥 THE COMBO TASK:
+    **Combo Task:** Ek for-loop laga aur stream generator se "chunks" extract kar. Terminal par unhe real-time (type-writer effect) print karwa. Python ke `print` statement mein `flush` aur `end` parameters check kar aur apply kar.
+    **Challenge:** Agar tera app ek high-traffic FastAPI server pe deployed hai, toh tu `.invoke()` aur `.stream()` ki jagah kaunse async alternatives (`a`-prefixed) use karega taaki Event Loop block na ho?
 
 4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
 - Output pehle method mein ek sath dump hoga. Doosre method mein words real-time terminal pe type hote huye dikhenge (Instant gratification).
