@@ -1522,3 +1522,5 @@ Guru-ji's Warning:
 
 Beta, roadmap clear! System architect mode ON. Keep building, keep hacking! 🔥🚀"
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+==========upto section 5 ================now need to do practicle from section 6..
