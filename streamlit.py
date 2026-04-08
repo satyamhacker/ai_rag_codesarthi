@@ -1,6 +1,7 @@
 import streamlit as st
 import time
 
-st.write("Pehla message")
-time.sleep(5)
-st.write("Doosra message 5 second baad")
+with st.spinner("AI soch raha hai..."):
+    time.sleep(3)  # Yahan aapka heavy code aayega (e.g., model.generate)
+    
+st.success("Response taiyaar hai!")
