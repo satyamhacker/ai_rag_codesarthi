@@ -1,494 +1,525 @@
-==========section 13===========
+Chal bhai, haath pair jod, terminal khol! Aaj real knowledge ki aag lagate hain. Theory ho gayi, ab practically haath gande karne ka time hai! 
 
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 1: The RAG Foundation & Vector Setup → Level 1.1: Environment Sandbox & Embedding Initialization [🟢 Beginner]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-1. ⚡ The Concept (Ultra-Short)
-Apne kitchen (workspace) ko alag karo aur ek translator (embedding model) bithao jo English ko vector math (numbers) mein convert kare.
-
-2. 💥 Why? (Production Impact)
-- Global Python environment use kiya toh kal naya package aate hi purana code toot jayega.
-- Bina embedding model ke, tera system "Dog" aur "Puppy" ko same nahi maanega kyunki computer sirf exact string match janta hai. 
-- Galat model match hua toh **Model Dimension Mismatch** error deke script crash ho jayegi.
-
-3. 🎯 Practical Tasks (The Mission)
-
-  Task [1]: Environment & Dependency Setup
-  The Logic: `python -m venv` use karke ek naya sandbox bana (naam `ragas_env` rakh). Usme LangChain, Chroma, aur Ragas install kar. Sabse zaroori — in versions ko ek text file mein pin kar (`requirements.txt`). Is process ko Dependency Pinning kehte hain.
-
-  Task [2]: The Local Translator
-  The Logic: `OllamaEmbeddings` class ka object bana. Isme apna local model specify kar (e.g., Llama 3.2). Ensure kar ki background mein tera Ollama local server running ho, warna connection refused aayega.
-
-  Task [3]: Vectorization Verification
-  The Logic: Ek test string le aur usko model se pass karwa `embed_query()` method ka use karke. Yeh function string lega aur ek float array return karega. Us array ki length (dimensions) check kar.
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Apne naye virtual environment mein ek python script likh jo explicitly Llama 3.2 se baat kare, ek technical question ko tokenise karke neural network se pass kare, aur vector ki exact dimensions print kare. 
-  > **Challenge:** Agar tu kal model Llama se hata ke OpenAI karta hai, toh dimensions mein kya farq aayega? Dono ke numbers verify kar bina API hit maare.
-
-4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- `pip install` ka exit code 0 hona chahiye.
-- Terminal pe Python script run karne ke baad output mein strictly vector length dikhni chahiye.
-- 📤 **Expected Output:** `Dimensions: 384` (agar Llama 3.2 use kiya hai toh).
-> 💬 **Quick Verify:** "Bina SAME model ke query aur document index karna hamesha disaster kyu hota hai?"
-
-5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **`venv` & `requirements.txt`:** Kitchen isolate karne aur version lock karne ke liye. Bina iske "It works on my machine" wali problem aati hai.
-- **`OllamaEmbeddings`:** Local execution karta hai taaki private data internet pe na jaye (GDPR/HIPAA secure).
-- **`embed_query()`:** Yeh function tokens ko semantic meaning ke saath ek mathematical n-dimensional space mein map karta hai.
-> ⚠️ **Anti-Pattern:** Sab kuch Global Python environment mein install karna bina dependencies pin kiye — kyunki ek mahine baad tu bhool jayega kaunsa version chal raha tha. Sahi tarika: Hamesha venv aur pinning use kar.
-
+Tera notes scan kar liya maine. Total 13 distinct topics hain, matlab apna Module Count Rule ke hisaab se yeh ek hardcore 3-Module CTF banega. Sabse pehle apna master plan dekh le, phir sidha battleground mein utarte hain.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 1: The RAG Foundation & Vector Setup → Level 1.2: Mock Data Injection & Ground Truth Mapping [🟡 Intermediate]
+🗺️ GURU-JI'S MASTER ROADMAP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Total Modules: 3 | Total Levels: 13 | Estimated Completion Time: 8-10 hours
+Difficulty: Intermediate to Advanced (Hardcore Production Testing)
+
+📦 Module 1: The Core Metrics & Execution Engine
+  ├── Level 1.1 — Fundamentals of Tool Calling & Correctness [🟢 Beginner]
+  ├── Level 1.2 — Scoring Calculation & The ToolCall Class [🟡 Intermediate]
+  ├── Level 1.3 — Local Verification vs Cloud Dashboard [🟢 Beginner]
+  ├── Level 1.4 — Custom Tool Creation & Zero Trust [🟡 Intermediate]
+  └── Level 1.5 — Agent Initialization & ReAct Workflow [🔴 Advanced]
+
+📦 Module 2: Golden Datasets & Internal Extractions
+  ├── Level 2.1 — Structuring the Golden Dataset [🟡 Intermediate]
+  ├── Level 2.2 — DeepEval Cloud Sync (Push/Pull) [🟢 Beginner]
+  ├── Level 2.3 — Custom AI Agent Invocation [🔴 Advanced]
+  └── Level 2.4 — Extracting Intermediate Tool Steps [🔴 Advanced]
+
+📦 Module 3: Assembly, Debugging & Advanced Tuning
+  ├── Level 3.1 — Intermediate Steps Parsing & Scoping [🔴 Advanced]
+  ├── Level 3.2 — Test Case Assembly & State Sync [🟡 Intermediate]
+  ├── Level 3.3 — Evaluation Execution & For-Loop Debugging [🟡 Intermediate]
+  └── Level 3.4 — Advanced Metric Configurations & Bug Avoidance [🔴 Advanced]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Bhai, roadmap ready hai! Kyunki tu eager shishya hai aur system loaded hai, main bina ruke seedha **Module 1** ki aag lagana shuru kar raha hoon. Terminal clear kar aur focus idhar la!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧩 Module 1: The Core Metrics & Execution Engine → Level 1.1: Fundamentals of Tool Calling & Correctness [🟢 Beginner]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. ⚡ The Concept (Ultra-Short)
-Poori 100-page PDF padhne ke bajaye, manually ek chhota "Empty Box" banao jisme dense mock text aur mapped questions hon.
+Agent ne user query sunkar exactly sahi API (tool) trigger kiya ya hallucinate kar diya? Yeh test karna hi Tool Calling Testing hai.
 
 2. 💥 Why? (Production Impact)
-- Real PDF loaders (`PyPDFLoader`) hidden formatting symbols (`\n`, `\t`) add kar dete hain jo embeddings ka semantic weight kharab kar dete hain.
-- PII (Personally Identifiable Information) test scripts mein leak hone ka khatra.
-- Bina 1-to-1 mapping ke tumhe pata hi nahi chalega ki failure database search mein hua ya LLM ke answer banane mein.
+- Agar AI wrong tool utha le (e.g., math function ki jagah database delete command), production system crash ya compromise ho jayega.
+- AI inherently text generate karta hai, decision engine check karna zaroori hai.
 
 3. 🎯 Practical Tasks (The Mission)
+  Task [1]: DeepEval library se `LLMTestCase` object setup kar. Isme apna `input` (query), `expected_tools` (kya chalna chahiye tha), aur `actual_tools_called` (AI ne galti se kya chalaya) define kar.
+  The Logic: Yeh object quality inspector ko batayega ki AI ka report card kis base par judge karna hai.
 
-  Task [1]: Array Initialization
-  The Logic: Do clean arrays bana. Ek `raw_documents_data` (jisme dense, heavy context ho) aur dusra `reference_questions` (us context ka exact, direct question).
+  Task [2]: `ToolCorrectnessMetric` ka instance bana aur `measure()` method trigger kar upar wale test case par.
+  The Logic: Yeh Contextual Relevance dekhega. String match nahi karega, smart grading system use karega.
 
-  Task [2]: Document Object Instantiation
-  The Logic: Langchain plain strings nahi samajhta. Ek loop laga aur har raw text ko `langchain_core.documents` ke `Document` object mein wrap kar. Usme `page_content` aur track karne ke liye `metadata` (like `source: testing`) zaroor daal.
-
-  Task [3]: The Safety Lock
-  The Logic: Apne code mein ek `assert` condition laga jo enforce kare ki number of documents strictly equal hone chahiye number of reference questions ke. 
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Ek single script mein 3 alag-alag dense sentences ka array banao aur unke mapped questions likho. Script ko unhe `Document` objects mein convert karne do, safety lock pass karwao, aur success message print karo.
-  > **Challenge:** Ek array mein jaan-boojh kar ek extra item daal ke code run kar. Check kar ki kya tera assertion error explicitly pipeline crash kar raha hai? (This is called Information Extraction validation).
+  💥 THE CHAOS TASK (Break it to Master it):
+  Jaan-boojh kar agent ko registry mein ek saath 50 tools assign kar de bina Semantic Router use kiye. Phir usko tool call karne bol. Error dekh. Agent confuse hoke hallucinate karega. Phir troubleshoot flowchart use kar: "ToolNotFoundException" aaya? Case sensitivity check kar. Log padh aur Modular approach se fix kar. Asli engineer error dekh ke darta nahi hai!
 
 4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- Script bina error ke end tak pahunche aur bataye kitne documents load hue.
-- 📤 **Expected Output:** `Prepared 2 docs for Multi-Shot Sample Test.` (Yaa jitne tune dale hain).
-> 💬 **Quick Verify:** "Bhai, evaluation ke starting phase mein 100-page ki PDF kyu ingest nahi karni chahiye?"
+- 📤 Expected Output on Console: `Agent Score: 0.0` (agar actual aur expected miss-match kiya deliberately).
+- 🕵️‍♂️ Under The Hood Verification: Script ke backend logs mein check kar ki `agent.run` hook properly `tool_invoked` log kar raha hai ya nahi.
+- 💬 Quick Verify 1 (Core Concept): "Agar koi pooche — Tool Calling evaluation mein 'Decision Engine' kya check karta hai — toh kya bolega?"
+- 💬 Quick Verify 2 (Comparison): "Basic String match aur DeepEval ToolCorrectnessMetric mein contextual relevance ka kya farq hai?"
 
 5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **`Document` Object:** Langchain and Chroma sirf isi object ko natively support karte hain (string doge toh crash hoga).
-- **`metadata`:** Jab DB mein mock aur real data mix ho jayega, toh yahi metadata tag (`type: testing`) filter lagane mein jaan bachayega.
-- **`assert len() == len()`:** Yeh mismatch error pakadne ke liye hai. Agar synthetic data generator question banana bhool gaya, toh pipeline aage jaake faaltu errors na de.
-> ⚠️ **Anti-Pattern:** Deprecating libraries ka use karna jaise `langchain.docstore.document`. Sahi tarika: Hamesha modern `langchain_core.documents` module use kar.
-
+- **ToolCorrectnessMetric:** AI ka report card.
+- **LLMTestCase:** Woh answer sheet jo measure hoti hai. 
+- ⚠️ **Anti-Pattern:** Ek hi agent ko saare tools ek saath de dena. Sahi tarika: Semantic Router se pehle domain decide kar, phir chhota subset of tools de.
+- **Scalability Hook:** 10,000 requests par LLM ko bar-bar tools dikhana costly hai. Production mein hamesha Least Privilege Principle aur Semantic Routers use kar.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 1: The RAG Foundation & Vector Setup → Level 1.3: Vector Store HNSW Indexing & Persistence [🟡 Intermediate]
+🧩 Module 1: The Core Metrics & Execution Engine → Level 1.2: Scoring Calculation & The ToolCall Class [🟡 Intermediate]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. ⚡ The Concept (Ultra-Short)
-Apne Langchain Documents ko vector arrays mein convert karwa ke Chroma database mein store aur persist (save) karna.
+Raw dictionaries use mat kar. `ToolCall` class strongly-typed evaluation enforce karti hai taaki typose fail na ho.
 
 2. 💥 Why? (Production Impact)
-- SQL databases "Dog" aur "Puppy" ko relate nahi kar sakte (meaning-based search fail).
-- Agar RAM mein save kiya toh script band hote hi saalo ki index mehnat udd jayegi.
-- Bina HNSW index ke millions of rows mein similarity search karne mein ghanto lagenge (brute force).
+- Dictionaries mein case sensitivity (e.g., `WebSearch` vs `web_search`) metric ko fail karti hai.
+- Schema validation na hone se parser crash ho sakta hai runtime par.
 
 3. 🎯 Practical Tasks (The Mission)
+  Task [1]: `ToolCall` class import kar. 2 objects bana (`finance_tool`, `calculator_tool`). Har ek mein `name`, `input`, aur `output` keys strictly define kar.
+  The Logic: Yeh strongly typed objects hain. AI ko schema strictly follow karwayenge.
 
-  Task [1]: The Vectorization Call
-  The Logic: Chroma vector store ka factory method call kar. Isme apna input mock array (data intake) aur tera Local Translator (`OllamaEmbeddings`) feed kar. Yeh API ko hit karega aur matrix create karega.
+  Task [2]: Ek test case bana jisme Ground Truth (expected) 2 tools ho, par `actual_tools_called` mein sirf 1 pass kar.
+  The Logic: Humein Ratio-based calculation dekhni hai. Kya metric partial credit deta hai ya zero karta hai?
 
-  Task [2]: Locking it to Disk
-  The Logic: Ussi function call ke andar ek specific argument pass kar jo Chroma ko bole ki "Bhai, database ko memory se nikal aur mere hard drive par is specific folder (`./chroma_db`) mein permanently save kar de". 
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Pichle level ke `Document` objects ko utha aur Chroma DB initialize kar. Poora vectorization hone ke baad OS level pe verify kar ki database actually likha gaya hai ya nahi.
-  > **Challenge:** Script run hone ke baad, apna bash terminal khol aur `ls -la ./chroma_db` run kar. Kya wahan SQLite aur random UUIDs wali index files dikh rahi hain? 
+  💥 THE CHAOS TASK (Break it to Master it):
+  `expected_tools` mein object ki jagah directly ek raw Python dictionary pass karke test measure karne ki koshish kar. Crash hone de. Console mein Validation Error padh. Phir theek kar `ToolCall` object banakar. Pata hona chahiye ki type-checking fail hone par system kaise fat-ta hai!
 
 4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- Script smoothly run ho aur database folder project directory mein appear ho jaye.
-- Bash mein `ls -la` marne par index files confirm hon.
-- 📤 **Expected Output:** `Data intake and vectorization call complete. Index saved!`
-> 💬 **Quick Verify:** "HNSW indexing ka fayda kya hai jab hum exact string match kar sakte hain?"
+- 📤 Expected Output on Console: `Tool Score: 0.5` (Partial credit awarded).
+- 🕵️‍♂️ Under The Hood Verification: Metric evaluation ke details export kar (JSON/CSV) aur check kar ki internal mathematical loop ZeroDivisionError toh nahi phenk raha.
+- 💬 Quick Verify 1 (Core Concept): "ToolScore mathematically kaise nikalta hai?"
+- 💬 Quick Verify 2 (Comparison): "Raw dictionary approach vs ToolCall object mein error handling aur schema mein kya bada difference hai?"
 
 5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **`from_documents`:** Yeh factory method ek sath naya DB banata hai, vectors API call marta hai, aur HNSW index build karta hai. Ise pipeline mein baar-baar nahi likhna hai.
-- **`persist_directory`:** Critical parameter. Iske bina DB sirf RAM mein rahega (ephemeral) aur script close hote hi data vanished.
-- **Batching Concept (Hint):** Agar 50,000 files aayin, toh memory phat jayegi (OOM Error). Tab `from_documents` ki jagah chunks banake `.add_documents()` use karte hain.
-> ⚠️ **Anti-Pattern:** Web app ke har API request ya script run par `from_documents` chala dena. Sahi tarika: ⭐ `from_documents` ko strictly life-cycle mein SIRF EK BAAR run kar, aur baaki time sirf read/load kar.
+- **ToolCall class:** Strongly typed, strict schema maintainer.
+- **Ratio Score:** Correctly Used Tools divided by Total Tools. Formula safe hai.
+- ⚠️ **Anti-Pattern:** `expected_tools` mein plain dictionary pass karna. Case mismatch se score 0 aayega.
+- **Scalability Hook:** Production level exports mein hamesha PII Data Masking lagana zaroori hai taaki test logs mein passwords leak na hon.
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧩 Module 1: The Core Metrics & Execution Engine → Level 1.3: Local Verification vs Cloud Dashboard [🟢 Beginner]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ⚡ The Concept (Ultra-Short)
+Data cloud dashboard pe bhejna hai ya local air-gapped machine par evaluate karna hai? Yeh execution context decide karta hai.
+
+2. 💥 Why? (Production Impact)
+- Confidential bank/healthcare queries agar third-party portal par sync ho gayi toh data leak disaster hoga.
+- CI/CD mein team ko central telemetry dekhni hoti hai, local mein developers ko privacy.
+
+3. 🎯 Practical Tasks (The Mission)
+  📚 Research & Answer Tasks (Conceptual Verification):
+  - Task [1]: `metric.measure()` ka internal behavior track kar. Check kar ki kya yeh koi HTTP webhook call karta hai bahar?
+  - Task [2]: `deepeval.evaluate()` ka architecture check kar. CI/CD pipelines (like pytest) mein yeh Confident AI portal ke sath kaise telemetry sync karta hai?
+
+  💥 THE CHAOS TASK (Break it to Master it):
+  Internet (Wi-Fi) disconnect kar de (simulate air-gapped environment). Ab `deepeval.evaluate()` run kar. ConnectionError ya Webhook fail aayega. Ab isko fix karne ke liye execution context change kar aur `metric.measure()` use kar. Dekh offline evaluate hota hai ya nahi!
+
+4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
+- Air-gapped machine par bina error ke evaluation pass ho jana chahiye using local metric method.
+- 💬 Quick Verify 1 (Core Concept): "Air-gapped environments mein DeepEval testing kaise ki jaati hai bina leak ke?"
+- 💬 Quick Verify 2 (Comparison): "`metric.measure()` aur `deepeval.evaluate()` mein Data Confinement ka kya farq hai?"
+
+5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
+- **metric.measure():** In-memory local execution. No telemetry. 
+- **deepeval.evaluate():** Triggers webhook, portal dashboard sync.
+- ⚠️ **Anti-Pattern:** Har local dev test ke liye `evaluate()` use karna, jisse dashboard trash se bhar jaye aur speed slow ho.
+- **Scalability Hook:** Production CI/CD hamesha telemetry bhejta hai, par secure environments strict Data Confinement laws follow karte hain.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧩 Module 1: The Core Metrics & Execution Engine → Level 1.4: Custom Tool Creation & Zero Trust [🟡 Intermediate]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ⚡ The Concept (Ultra-Short)
+Python function ko AI ke samajhne layak BaseTool mein convert karna using decorators and docstrings.
+
+2. 💥 Why? (Production Impact)
+- AI default functions nahi padh sakta. Bina schema aur description ke woh hallucinate karega aur parameter galat bheja toh application crash.
+- API keys leak hone se bachana hai Zero Trust environment banakar.
+
+3. 🎯 Practical Tasks (The Mission)
+  Task [1]: `os.environ` se `CONFIDENT_AI_API_KEY` ko pop (remove) kar. Zero trust local mode enforce kar.
+  The Logic: Cloud portal pe data nahi bhejna hai, strictly local testing karni hai.
+
+  Task [2]: Do math functions bana (add, multiply). Langchain ka `@tool` decorator use kar. Isme Type hints (`a: int`) aur proper `Docstring` daal.
+  The Logic: Decorator in functions ko JSON schema mein wrap karega LLM consumption ke liye.
+
+  💥 THE CHAOS TASK (Break it to Master it):
+  Ek naya tool bana, `@tool` laga de par function ke andar `Docstring` mat likh. Phir LLM se us function ko call karwa. Agent fat jayega ya galti karega. Phir proper docstring likh ke verify kar ki description bina AI andha kyu hai.
+
+4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
+- 📤 Expected Output on Console: Print the tool attributes -> `Tool Name: add_numbers, Description: Adds two integer numbers... args: {'a': {'type': 'integer'}...}`
+- 🕵️‍♂️ Under The Hood Verification: Check kar ki pydantic validation strictly 'int' enforce kar rahi hai ya LLM string pass karke prompt injection kar paa raha hai.
+- 💬 Quick Verify 1 (Core Concept): "Decorator `@tool` internally ek python code ko LLM format mein kaise badalta hai?"
+- 💬 Quick Verify 2 (Comparison): "Type hint aur Docstring dono AI ko kya alag-alag information sikhate hain?"
+
+5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
+- **Zero Trust Environment:** API keys memory se pop karna.
+- **@tool & Docstring:** Function ka instruction manual.
+- ⚠️ **Anti-Pattern:** Function mein docstring na likhna. AI tool ka purpose hi nahi samajh payega.
+- **Scalability Hook:** Production mein 50+ tools ke liye "Toolkits Pattern" (Microservices) use hota hai, single functions nahi.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧩 Module 1: The Core Metrics & Execution Engine → Level 1.5: Agent Initialization & ReAct Workflow [🔴 Advanced]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ⚡ The Concept (Ultra-Short)
+AgentExecutor woh Manager hai jo LLM ki reasoning (Thought) aur Tools ke actions ko ReAct loop mein bind karta hai.
+
+2. 💥 Why? (Production Impact)
+- Normal LLM chain sirf text fekti hai, API fetch ya execute nahi kar sakti. 
+- Agar loop parameters strictly handle nahi kiye, toh agent infinite loop mein fas kar lakhon ka API bill faad dega.
+
+3. 🎯 Practical Tasks (The Mission)
+  Task [1]: Langchain se `initialize_agent` setup kar. Reasoning engine (LLM) ka `temperature=0` set kar.
+  The Logic: Temp 0 matlab strict, zero creativity. Tools ko deterministic data chahiye, kahani nahi.
+
+  Task [2]: AgentType `ZERO_SHOT_REACT_DESCRIPTION` use kar. Tools array pass kar aur safety ke liye `max_iterations` cap set kar.
+  The Logic: Zero-shot agent bina examples ke tools ki docstrings padhkar kaam karega. Cap usko infinite loops se bachayega.
+
+  🔥 COMBO TASK (Final Boss):
+  Is pure module ko ek saath bind kar! Agent setup kar, `invoke({"input": "Add 5 and 10"})` trigger kar, aur verbose logging ON rakh.
+  **Challenge:** Agent ko intentionally confuse kar (e.g., galat query de jo math tool se solve na ho) aur dekh ki Agent Loop Risk kaise handle hota hai max_iterations limit trigger hone tak. 
+
+4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
+- 📤 Expected Output on Console (Verbose): `> Entering new AgentExecutor chain... Thought... Action... Action Input... Observation... Final Answer: 15`
+- 🕵️‍♂️ Under The Hood Verification: Logs trace kar aur dekh ki Agent ne internally kitne iterations maare ReAct loop complete karne se pehle.
+- 💬 Quick Verify 1 (Core Concept): "AgentExecutor aur normal LLM chain mein execution ka basic flow farq kya hai?"
+- 💬 Quick Verify 2 (Parameter): "Tool calling agent mein `temperature` parameter 0 rakhna life-saving kyun hota hai?"
+
+5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
+- **AgentExecutor:** ReAct loop manager (Thought -> Action -> Observation).
+- **Agent Loop Risk:** `max_iterations` nahi lagaya toh infinite API calls.
+- ⚠️ **Anti-Pattern:** Tools wale agent me `temperature=0.8` (high) rakhna. LLM hallucinate karke JSON schema tod dega.
+- **Scalability Hook:** Scale par traditional text-parsing ReAct ki jagah native **OpenAI Functions** use hote hain reliable structure ke liye.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🏁 MODULE 1 RECAP — Tera Status Report
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Siksha Summary:
-- Tune apna isolated Python environment set up karna aur dependencies lock karna seekh liya hai.
-- Tune local LLM server (Ollama) aur model dimensions ka mismatch concept practically clear kar liya hai.
-- Tune clean, mock Langchain `Document` objects manually inject karna seekha taaki noisy PDFs evaluation barbaad na karein.
-- Tune data ko Chroma DB mein persist karna aur HNSW indexing ke through backend vectors set karna implement kar liya hai.
+- Tune DeepEval metric ka base measure karna seekha.
+- Ratio-based scoring aur `ToolCall` se strictly typed objects banaye.
+- Local vs Cloud dashboard telemetry difference practically test kiya.
+- Zero Trust environment banake AI BaseTools setup kiye.
+- ReAct loop mein AgentExecutor ko safely invoke karna seekha with strict parameters.
 
 Guru-ji's Warning:
-"Check kar le bhai! Kya tujhe yeh sab bina cheat sheet ke karna aa gaya hai? Agar inme se ek bhi cheez mein doubt hai ya confuse hai, toh chup chaap peeche ja aur wapas execute kar. Aage badhne ka koi fayda nahi agar basics hile hue hain! Database agar solid nahi hoga, toh LLM-as-a-judge kaccha chaba jayega."
+"Check kar le bhai! Kya tujhe yeh sab bina cheat sheet ke karna aa gaya hai? Agar inme se ek bhi cheez mein doubt hai ya confuse hai, toh chup chaap peeche ja aur wapas execute kar. Aage badhne ka koi fayda nahi agar basics hile hue hain!"
 
 ⚡ GURUDAKSHINA (The Checkpoint):
-"Sare Levels clear hue? Screenshots taiyar rakh! Agar sab properly done hai toh type 'CONTINUE' for the next Module (Jahan hum Retrieval QA aur Pipeline execution set karenge)."
+"Sare Levels clear hue? Screenshots taiyar rakh! Agar sab properly done hai toh type 'CONTINUE' for the next Module (Golden Datasets & Internal Extractions)."
 
-Chal bhai, bina break ke aage badhte hain! Foundation set ho chuki hai (Vector DB aur embeddings ready hain). Ab time hai factory line start karne ka. 
+--- ⏸️ OUTPUT LIMIT APPROACHING. Type 'CONTINUE' to get the next part.
+✅ Completed so far : Level 1.1, Level 1.2, Level 1.3, Level 1.4, Level 1.5
+⏳ Remaining       : Modules 2 and 3 (Levels 2.1 to 3.4)
+📊 Progress        : 5 Levels done / 13 Levels total | Module 1 of 3
 
-Terminal pe focus kar, hum Module 2 aur Module 3 ko fodne wale hain.
+Chal bhai, break khatam! Terminal pe wapas aaja. Module 1 mein tune engine aur metrics ke basics hila diye hain. Ab **Module 2** mein hum production-grade data pipelines aur AI ki black-box executions ko cheer-phaad karke open karenge.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 2: The Assembly Line & Execution Logic → Level 2.1: Retrieval QA Pipeline Wiring [🟡 Intermediate]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-1. ⚡ The Concept (Ultra-Short)
-Librarian (Retriever) ko Assembly line worker (LLM) ke saath jodna taaki answer sirf chuni hui kitabon se bane.
-
-2. 💥 Why? (Production Impact)
-- Agar LLM ko seedha poora database pakda diya, toh **Context Window** exceed ho jayegi aur API phat jayegi.
-- Agar Retriever use nahi kiya toh LLM hallucinate karega (apne dimag se jhooth bolega).
-- Positional parameters use kiye toh library update aate hi system break ho jayega.
-
-3. 🎯 Practical Tasks (The Mission)
-
-  Task [1]: The Librarian Setup
-  The Logic: Apne vector database par `as_retriever` method lagao. Isme explicitly ek keyword argument do jo bataye ki sirf top 3 results hi lane hain (Top-K selection). *Hint: Agar frontend se yeh limit user ke hath mein chhod di, toh DoS attack ya Data Exfiltration ho sakta hai.*
-
-  Task [2]: The Assembly Line (QA Chain)
-  The Logic: `RetrievalQA.from_chain_type` use karke pipeline initialize kar. Isme apna local LLM aur retriever pass kar. Chain type ko woh set kar jo saare chunks ko ek saath LLM ko bhejta hai (wo "S" se shuru hone wala simple mode).
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Pipeline initialize karte waqt jaan-boojh ke positional arguments pass kar bina unke naam likhe (e.g., `(llm, "type", retriever)`). Error khao. Phir usko "Pro Way" mein fix karo keyword arguments (kwargs) use karke.
-  > **Challenge:** Ab Top-K strategy ko replace karke **MMR (Maximal Marginal Relevance)** activate kar taaki 3 chunks aapas mein redundant (same-to-same) na hon.
-
-4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- Pipeline initialization bina kisi "validation error" ke pass ho.
-- 📤 **Expected Output:** `QA Pipeline is ready!` print hona chahiye.
-> 💬 **Quick Verify:** "Agar 50-page ki PDF feed karni ho, toh 'stuff' chain type fail kyun ho jayega aur fallback kya hai?"
-
-5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **`as_retriever`:** Vector DB ko search engine mein badalta hai.
-- **`chain_type="stuff"`:** Sabse simple mode. Retrieved chunks ko direct prompt mein merge karta hai. Badi files ke liye `map_reduce` lagta hai.
-- **MMR:** Diversity laata hai taaki LLM ko broad context mile.
-> ⚠️ **Anti-Pattern:** Positional Parameter Error. Sahi tarika: Hamesha API integration mein Named Arguments (kwargs) use kar (`llm=llm`).
-
+Focus level 100% chahiye idhar. Let’s go!
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 2: The Assembly Line & Execution Logic → Level 2.2: Query Execution, Latency Profiling & LCEL [🔴 Advanced]
+🧩 Module 2: Golden Datasets & Internal Extractions → Level 2.1: Structuring the Golden Dataset [🟡 Intermediate]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. ⚡ The Concept (Ultra-Short)
-Unseen query pass karna, backend footprint calculate karna, aur output ko JSON dictionary mein pack karna.
+Golden Dataset tera Master Answer Key hai. AI pass hoga ya fail, yeh is strict baseline data par depend karta hai.
 
 2. 💥 Why? (Production Impact)
-- Bina 2-step verification ke tujhe kabhi nahi pata chalega LLM ne actually document padha ya nahi (Faithfulness fail).
-- Agar Synchronous run kiya toh cloud par **504 Gateway Timeout** aa jayega.
-- Bina try-except ke 1000 questions ki evaluation mein ek error aane par pichle 999 answers bhi RAM se delete ho jayenge.
+- AI naturally hallucinate karta hai. Bina ground truth ke CI/CD pipeline mein automated testing andhi ho jayegi.
+- Production mein PII (user data) leak hone ka darr hota hai, isliye mock baseline lazmi hai.
 
 3. 🎯 Practical Tasks (The Mission)
+  Task [1]: DeepEval framework se `ToolCall` instantiate kar. Apne math functions (add, multiply) ke exact `name` aur variables ki `input` dictionary map kar.
+  The Logic: Yeh Data Extraction Accuracy badhayega. Strings ki jagah strictly typed objects compare honge.
 
-  Task [1]: Do-Step Verification
-  The Logic: Ek "Unseen variation query" bana (jo notes se thoda alag ho). Pehle manually `get_relevant_documents` chala aur print kar ki kitne chunks aaye. Yeh step 1 hai.
+  Task [2]: Ek python list (array) bana — tera Master Answer Key. Har scenario dictionary mein `question`, `expected_answer` (text), aur `expected_tools` (jo list tune Task 1 mein banayi) define kar.
+  The Logic: Is array ko test runner loop karega. Yeh Dual Verification setup hai — text bhi check hoga aur backend tool bhi.
 
-  Task [2]: LCEL Execution
-  The Logic: Purana `run()` method use mat kar. Naya LangChain Expression Language (LCEL) method use kar (`invoke`). Ise strictly dictionary format mein input pass kar.
-
-  Task [3]: Latency Profiling & Payload Construction
-  The Logic: Code chalne se pehle aur baad mein timer laga. Query, context, LLM response, aur ground truth ko ek exact dictionary structure mein daal jo Ragas evaluation ke liye chahiye hoti hai.
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Ek array mein do questions aur do references le. Zip loop chala. Loop ke andar timer on kar, context fetch kar, LLM se answer le, aur payload dictionary banakar ek final array mein append kar. Poore logic ko Try-Except mein lapet. 
-  > **Challenge:** Execute hone ke baad final list ko JSON format mein nicely indent karke print kar, aur total Execution Latency (seconds mein) dikha.
+  💥 THE CHAOS TASK (Break it to Master it):
+  Apne `expected_answer` ko "The sum is 15." set kar. Ab evaluator logic mein **Exact Match** (string `==` string) try kar. Agent ko answer dene de "15" ya "It is 15". Test fail hone de! 
+  Ab samajh ki Shallow Testing kaise fail hoti hai. Isey theek karne ke liye Semantic Textual Similarity (STS) ya LLM-as-a-judge method ki taraf switch karne ka logic build kar taaki contextual relevance check ho, exact characters nahi.
 
 4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- Loop 100% execute ho, array print ho, aur exact seconds (latency) calculate hoke print ho.
-- 📤 **Expected Output:** JSON payload with keys: `user_inputs`, `retrieved_context`, `response`, `reference` + Total Execution Latency footprint.
-> 💬 **Quick Verify:** "Agar synchronous execution lagai, toh 1 million users hone pe API crash kyu hogi aur backend devs Celery/Redis kyu use karte hain?"
+- 📤 Expected Output: Print kara ke dekh ki kitne scenarios load hue. "Loaded 2 scenarios in Golden Dataset."
+- 🕵️‍♂️ Under The Hood Verification: `golden_dataset[0]['expected_tools'][0].name` property print karke verify kar ki ToolCall instance sahi se map hua hai.
+- 💬 Quick Verify 1 (Core Concept): "Shallow Testing aur Deep Testing (Dual Verification) mein kya farq hai?"
+- 💬 Quick Verify 2 (Comparison): "Exact Match string comparison AI evaluation mein anti-pattern kyun hai?"
 
 5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **LCEL (`invoke` / `ainvoke`):** Standard API execution methods. `ainvoke` non-blocking hai.
-- **Dictionary Construct:** `user_inputs`, `response`, etc. Ragas strictly yahi keys expect karta hai.
-- **`time.time()`:** DB retrieval vs LLM generation ki individual latency napne ka primitive tool.
-> ⚠️ **Anti-Pattern:** Overwrite anti-pattern (loop mein `dataset = payload` likhna). Sahi tarika: Single item ke liye `.append()` use karo taaki array build ho.
+- **Golden Dataset:** Baseline test scenarios array with questions, expected texts, and expected tool calls.
+- **Dual Verification:** Text answer + backend Tool execution dono pass hone chahiye.
+- ⚠️ **Anti-Pattern:** Exact Match use karna expected answer ke liye. Sahi tarika: STS ya Contextual Relevance use kar.
+- **Scalability Hook:** Production mein testing ke liye real database export use mat karna (PII Data Leakage risk). Hamesha Fake/Synthetic Generation use kar.
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧩 Module 2: Golden Datasets & Internal Extractions → Level 2.2: DeepEval Cloud Sync (Push/Pull) [🟢 Beginner]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ⚡ The Concept (Ultra-Short)
+Apne local test data ko cloud pe sync karna (Push) aur khali object mein auto-populate karwana (Pull).
+
+2. 💥 Why? (Production Impact)
+- Team ke paas ek "Single Source of Truth" aur version control hona chahiye.
+- Raw JSON ko manually python objects mein map karne ka code likhna fragile hota hai.
+
+3. 🎯 Practical Tasks (The Mission)
+  Task [1]: CLI pe auth barrier cross kar (`login` command use karke). Apne local `EvaluationDataset` ko `.push()` command se cloud processing ke liye bhej aur usko ek unique `alias` de.
+  The Logic: Tera data Confident AI dashboard pe as a central baseline save ho jayega.
+
+  Task [2]: Ek completely empty `EvaluationDataset()` bana. Ab ispe wahi exact alias use karke `.pull()` method call kar.
+  The Logic: Data Hydration trigger hogi. Framework cloud se data laake usko automatically `LLMTestCase` instances mein map kar dega bina kisi custom for-loop ke.
+
+  💥 THE CHAOS TASK (Break it to Master it):
+  Auth barrier bypass karne ki koshish kar. Script mein API key pop kar de aur phir push karne ki koshish kar. **Unauthorized 401** error aane de. Phir login verify kar. Uske baad, `pull` karte waqt alias mein spelling mistake kar aur dekh ki test_cases array zero/empty kyu reh gaya!
+
+4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
+- 📤 Expected Output on Console: `Total cases hydrated: X` and print the first case input.
+- 🕵️‍♂️ Under The Hood Verification: Hydrated object type check kar — kya array ke elements successfully `LLMTestCase` ban gaye hain?
+- 💬 Quick Verify 1 (Core Concept): "Data Hydration technique developer ka time kaise bachati hai?"
+- 💬 Quick Verify 2 (Behavior): "Agar Pull method fail hota hai, toh manual fallback kya hota hai?"
+
+5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
+- **dataset.push / .pull:** Cloud sync aur Single Source of Truth ke liye.
+- **Data Hydration:** Khali object ko cloud data se auto-populate karna.
+- ⚠️ **Anti-Pattern:** JSON file read karke custom manual object mapping script likhna (fragile). Sahi tarika: `.pull()` ka auto-population use kar.
+- **Security Check:** Cloud pe push karne se pehle PII sanitize zaroor kar.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧩 Module 2: Golden Datasets & Internal Extractions → Level 2.3: Custom AI Agent Invocation [🔴 Advanced]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ⚡ The Concept (Ultra-Short)
+Agent ke standard "Black Box" run ko bypass karke usko ek custom wrapper mein invoke karna taaki intermediate telemetry bacha saken.
+
+2. 💥 Why? (Production Impact)
+- Default invoke method Data Stripping karta hai, sirf final text deta hai. Agent galti kahan kar raha hai, yeh opaque execution mein pata nahi chalta.
+- SOC2 compliance ke liye execution telemetry trace karna zaruri hai.
+
+3. 🎯 Practical Tasks (The Mission)
+  Task [1]: Ek Asynchronous custom method bana (`async def`). Uske andar `agent_executor.invoke()` ko `await` ke saath call kar.
+  The Logic: Async framework block nahi karega parallel testing ko, aur tera custom wrapper telemetry ko capture karne ka scope dega.
+
+  Task [2]: Apne custom method ke andar dummy/sandbox database credentials inject karne ka placeholder bana.
+  The Logic: Testing environment kabhi bhi real production resources hit nahi karna chahiye (Data mutation risk).
+
+  💥 THE CHAOS TASK (Break it to Master it):
+  Agent ko invoke karte waqt `.invoke("Check my balance")` seedha string pass kar de. Error trace padh. Tuje **Missing Argument** jaisa error dikhega. Kyun? Kyunki framework dictionary expect karta hai. Isey fix kar aur `{"input": user_question}` properly map karke bhej. Asli code fatne pe hi sikhata hai!
+
+4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
+- 📤 Expected Output: `asyncio.run` se script execute kar aur result print kar. Output ek proper dictionary aani chahiye.
+- 🕵️‍♂️ Under The Hood Verification: Debugger/Network tab nahi, print statement se check kar ki kya intermediate steps stripp out ho gaye ya bache hain (next level ki taiyari).
+- 💬 Quick Verify 1 (Core Concept): "Standard invoke ko 'Black Box Execution' kyun kaha jata hai?"
+- 💬 Quick Verify 2 (Async): "Testing pipelines mein synchronous LLM calls blockages kaise create karte hain?"
+
+5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
+- **Custom Wrapper Method:** Transparent execution aur telemetry save karne ke liye.
+- **Data Stripping:** Memory bachane ke liye frameworks by default internal logs mita dete hain.
+- ⚠️ **Anti-Pattern:** Testing mein direct `agent.invoke()` use karna without a wrapper. Black box execution banega.
+- **Compliance Hook:** SOC2/GDPR ke liye PII hatana aur steps record karna production logging (LangSmith/Datadog) mein mandatory hai.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧩 Module 2: Golden Datasets & Internal Extractions → Level 2.4: Extracting Intermediate Tool Steps [🔴 Advanced]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ⚡ The Concept (Ultra-Short)
+Agent ka CCTV ON karna (`return_intermediate_steps`) aur kachre (raw logs) mein se useful ToolCall params nikalna.
+
+2. 💥 Why? (Production Impact)
+- Evaluator ko check karne ke liye array of objects chahiye, par agent raw tuple generate karta hai.
+- Agar safely JSON parse nahi kiya, toh AI ka ek extra comma test runner ko crash kar dega.
+
+3. 🎯 Practical Tasks (The Mission)
+  Task [1]: AgentExecutor initialize karte waqt ek specific flag (State Preservation flag) ko `True` kar.
+  The Logic: Yeh flag payload ko enrich karega aur "CCTV" ON karega jisse `intermediate_steps` response dictionary mein aayenge.
+
+  Task [2]: For-loop lagakar un steps ko parse kar. Har step ke **index 0** se action object nikal. Uske `tool` aur `tool_input` (jo ek string hai) ko extract kar.
+  The Logic: Tool input string format mein hota hai. Isey Python object banane ke liye `json.loads` use karna padega.
+
+  💥 THE CHAOS TASK (Break it to Master it):
+  Extraction script mein data direct aise access karne ki koshish kar: `step.tool`. Run kar. **AttributeError** aayega! Phir notes ka flowchart yaad kar: "Kyunki array ke andar objects nahi, **Tuples** hain!" Isey fix kar `step[0].tool` use karke. Saath hi ek galat JSON string dekar `json.JSONDecodeError` trigger kar aur usko **Try-except** block se sambhal taaki framework fatally crash na ho.
+
+4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
+- 📤 Expected Output: Saaf array print hona chahiye: `[{'tool': 'DB_Search', 'input': {'user_id': 42}}]`
+- 🕵️‍♂️ Under The Hood Verification: Debugger laga ke dekh ki kya `parsed_input` asli dictionary object ban gaya hai ya abhi bhi string quotes mein hai.
+- 💬 Quick Verify 1 (Core Concept): "`action.tool_input` string format mein kyun aata hai aur parsing kyun zaroori hai?"
+- 💬 Quick Verify 2 (Safety): "Data parsing safety ke liye JSONDecodeError ko catch karna kyun vital hai?"
+
+5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
+- **return_intermediate_steps:** Payload enrichment aur state preservation.
+- **AgentAction Tuple:** index [0] action hai, index [1] observation hai.
+- ⚠️ **Anti-Pattern:** Direct `step.tool` access karne ki koshish karna Tuple array par.
+- **Data Safety Hook:** Logs bhejte waqt Tool arguments mein users ke email/pass leak ho sakte hain (Data Exposure Risk). Environment check karke PII sanitization lazmi hai.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🏁 MODULE 2 RECAP — Tera Status Report
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Siksha Summary:
-- Tune Retriever aur LLM ko safely ek QA Chain mein bandh diya hai (Assembly Line complete).
-- Tune API timeout se bachne ke liye try-except loops aur latency footprinting implement kar li hai.
-- Tune data ko evaluate hone ke liye exact JSON payload schema mein lana seekh liya hai.
+- Tune Master Answer Key (Golden Dataset) structre karke banaya.
+- Data ko securely cloud pe Push/Pull aur hydrate karna seekha.
+- Agent ke Black Box (opaque execution) ko todkar Custom Wrapper banaya.
+- Tuple extraction aur JSON parsing (Try-except safety ke saath) apply karke telemetry payload enrich kiya.
 
 Guru-ji's Warning:
-"Check kar le bhai! Yahan tak pipeline stable honi chahiye. PII mask karna bhool gaya toh public logs mein user data leak ho jayega. JSON payload agar 1% bhi galat hua toh agla Module crash maarega. Galti hai toh fix kar."
+"Check kar le bhai! Kya tujhe yeh sab bina cheat sheet ke karna aa gaya hai? Agar tuple extraction ya data hydration mein jara sa bhi doubt hai, toh code dobara likh. Production mein ek 'KeyError' teri puri CI/CD pipeline ko mitti mein mila sakta hai!"
 
----
+⚡ GURUDAKSHINA (The Checkpoint):
+"Sare Levels clear hue? Screenshots taiyar rakh! Agar sab properly done hai toh type 'CONTINUE' for the Final Boss Module 3 (Assembly, Debugging & Advanced Tuning)."
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 3: Local LLM-as-a-Judge Evaluation & Debugging → Level 3.1: Ragas Dataset Schema & Wrapper Translation [🔴 Advanced]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+--- ⏸️ OUTPUT LIMIT APPROACHING. Type 'CONTINUE' to get the next part.
+✅ Completed so far : Module 1 (All Levels), Module 2 (Levels 2.1 to 2.4)
+⏳ Remaining       : Module 3 (Levels 3.1 to 3.4)
+📊 Progress        : 9 Levels done / 13 Levels total | Module 2 of 3
 
-1. ⚡ The Concept (Ultra-Short)
-Raw JSON/array data ko Ragas ki "Official File" mein convert karna, aur ek massive local AI (Senior Judge) ko uski testing kursi (Wrapper) par bithana.
+Chal bhai, akhiri padav aa gaya! Terminal pe focus lock kar. Module 1 aur 2 mein tune data extraction aur basic testing ka foundation set kar liya hai. Ab **Module 3** mein hum us raw data ko pack karenge, loop chalayenge, aur framework ke deep source code ko hack karke advanced metrics tune karenge. 
 
-2. 💥 Why? (Production Impact)
-- Ragas directly Pandas DataFrame ya simple JSON nahi padh sakta — bina Schema Check ke runtime `TypeError` aayega.
-- Cloud API (OpenAI) use ki toh PII cloud pe jayega (GDPR/HIPAA violation aur Data Sovereignty khatam).
-- Heavy models (70B) agar galat hardware pe run hue toh OS Out Of Memory (OOM) error dega.
-
-3. 🎯 Practical Tasks (The Mission)
-
-  Task [1]: The Schema Enforcer
-  The Logic: Pichle level ka array of dictionaries le. `EvaluationDataset` factory object import kar. Is object ka ek specific method call kar jo raw list ko strongly-typed official dataset mein badal de.
-
-  Task [2]: The Senior Judge
-  The Logic: Local ChatOllama model initialize kar (koi bhi Llama 3 variant jo tere RAM mein fit aaye). 
-
-  Task [3]: Wrapper Translation
-  The Logic: Ragas direct Ollama ko nahi janta. Apne `ChatOllama` model ko `LangchainLLMWrapper` mein pack kar taaki dono ke syntax aapas mein translate ho sakein.
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Data ingest karwa ke explicitly us data mein key ka naam galti se `user_inputs` ki jagah `question` kar de. `EvaluationDataset` generate kar aur verify kar ki strict schema check tujhe fail kar raha hai. Phir typo theek kar, aur LangchainLLMWrapper se wrap karke Evaluator LLM ki class name print karwa.
-  > **Challenge:** Agar tere paas 16GB RAM hai aur tu model "llama3.1:70b" load karega toh kya error aayega? (Hardware Constraints Anti-Pattern).
-
-4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- `TypeError` aaye jab syntax galat ho, aur sahi karne pe Wrapper ka object name print ho jaye.
-- 📤 **Expected Output:** `Dataset Items: X | LLM Ready: LangchainLLMWrapper`
-> 💬 **Quick Verify:** "Local testing environment ko evaluate karte waqt OpenAI ke bajaye ChatOllama (Local LLM) kyu prefer kiya jata hai security team dwara?"
-
-5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **Schema Validation (`from_list`):** Fail-fast mechanism taaki 10 ghante ki eval galat data ke saath start hi na ho.
-- **Wrapper Translation:** Interface pattern. `LangchainLLMWrapper` Ragas API aur BaseChatModel ke beech ka bridge hai.
-- **Data Sovereignty:** Enterprise data local VRAM (e.g. Apple M1 Max / TGI) se bahar nahi jana chahiye.
-> ⚠️ **Anti-Pattern:** HuggingFace se blindly dataset utha lena (Supply-chain data poisoning). Sahi tarika: Local sanitized JSONL data se evaluate karo.
-
+Bheja fry mat kar, seedha execution pe dhyan de. Let's finish this!
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 3: Local LLM-as-a-Judge Evaluation & Debugging → Level 3.2: The RAG Triad, Metrics Selection & Exclusion Fix [🟡 Intermediate]
+🧩 Module 3: Assembly, Debugging & Advanced Tuning → Level 3.1: Intermediate Steps Parsing & Scoping [🔴 Advanced]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. ⚡ The Concept (Ultra-Short)
-Apne School Marksheet (Triad of RAG) ke subjects choose karna, aur jo metric "VIP Pass" (Paid API) maang raha ho usko nikal fekna.
+Agent ke raw `intermediate_steps` array se action aur result ko safely nikal kar ek clean Tuple mein pack karna.
 
 2. 💥 Why? (Production Impact)
-- Agar code mein tiune explicit API key de di, toh Github public hotey hi "Denial of Wallet" attack ho jayega (API Key Leakage).
-- Kuch metrics default roop se internet embeddings check karte hain, local offline environment mein pipeline crash (`AuthenticationError`) kar denge.
+- AI testing frameworks kachra (raw arrays) nahi samajhte. Unhe structured variables chahiye.
+- Agar variables local function scope mein nahi rakhe, toh Global Variables Collision se poora test suite corrupt ho jayega.
 
 3. 🎯 Practical Tasks (The Mission)
+  Task [1]: Ek separate function bana `parse_agent_output`. Iske andar strictly "Index zero" hit kar taaki pehla step extract ho. 
+  The Logic: Separation of concerns enforce karna zaroori hai. Function execution scope limit rakhta hai jisse memory leaks nahi hote.
 
-  Task [1]: Selecting the Triad (Generator vs Retriever)
-  The Logic: Ragas.metrics se core subjects import kar: `ContextPrecision` (Retriever metric) aur `Faithfulness` (Generator metric). Ensure kar `FactualCorrectness` bhi ho.
+  Task [2]: Extracted `agent_action` object se directly uski properties (`tool` aur `tool_input`) nikal, aur result/observation ke sath ek Return Tuple mein caller ko wapas de.
+  The Logic: Tuple unpacking se clean data handoff hota hai. 
 
-  Task [2]: Deliberate Sabotage
-  The Logic: Ek array of metrics bana jismein explicitly `AnswerRelevance` ko add kar. Execute/evaluate karne ki koshish mat kar, sirf declare kar aur local env variables check kar (ensure no OPENAI_API_KEY is present).
-
-  Task [3]: The Exclusion Fix
-  The Logic: Ab ek naya list bana `safe_local_metrics`. Usme se us VIP metric ko exclude kar de jo OpenAIEmbeddings trigger karta hai.
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Metric exclusion fix implement kar. Total safe metrics ko print kar. 
-  > **Challenge:** Traceback padhke samajh ki jab error aata hai, toh galti `ragas` package ki nahi, balki uske internally call kiye hue `langchain_openai` ki hoti hai. 
+  💥 THE CHAOS TASK (Break it to Master it):
+  Agent action log message se tool ka naam nikalne ke liye ek ganda sa **Regex hack** use kar. Agent ka prompt thoda change kar taaki woh output formatting (spaces/markdown) badal de. Tera Regex toot jayega aur test fail hoga. Ab isko fix kar built-in object properties (`agent_action.tool`) aur `isinstance` (Type checking safety) lagakar. Pata hona chahiye string hacks production mein kyun fat-te hain! Saath hi ek Fallback return (`None, None, None`) laga taaki IndexError aane par test runner hard-crash na ho.
 
 4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- Safe array count successfully terminal par print hona chahiye.
-- 📤 **Expected Output:** `Initialization complete. Total safe metrics loaded: 3` (or however many excluding AnswerRelevance).
-> 💬 **Quick Verify:** "Faithfulness aur FactualCorrectness mein farq kya hai? Kaunsa hallucination pakadta hai?"
+- 📤 Expected Output on Console: `Extracted: DB, 123, Success` (Mock data pass karke verify kar).
+- 🕵️‍♂️ Under The Hood Verification: Debugger se caller side pe check kar ki variables exactly unpack huye hain ya tuple format mein hi fase hain.
+- 💬 Quick Verify 1 (Core Concept): "Execution Scope testing mein Global variables collision ko kaise rokta hai?"
+- 💬 Quick Verify 2 (Behavior): "Fallback return lagana test stability ke liye kyu zaroori hai?"
 
 5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **Generator vs Retriever:** Ek LLM check karta hai (hallucination), dusra Vector DB check karta hai (search accuracy).
-- **Metric Exclusion Fix:** Offline testing ke dauran strict dependencies hatana taaki Vendor Lock-in avoid ho sake.
-- **API Key Leakage:** Git push karte waqt Hardcoded keys lakho ka nuksan kara sakti hain.
-> ⚠️ **Anti-Pattern:** Traceback error dekh ke directly man lena ki "Ragas library tuti hui hai." Sahi tarika: Trace ko end tak padh aur missing component dhoondh.
-
+- **Parsing & Extraction:** Object ki strictly defined properties use karna.
+- **Return Tuple:** Safely caller ko data wapas pass karna.
+- ⚠️ **Anti-Pattern:** String logs par Regex hack use karna. Sahi tarika: Object attributes (`.tool`) use kar.
+- **Scalability Hook:** Multi-step agents ke liye sirf `[0]` kaam nahi aayega, wahan Pydantic models ke saath `for` loop iterate karna padega.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 3: Local LLM-as-a-Judge Evaluation & Debugging → Level 3.3: LangSmith Observability & Bottleneck Tracing [🔴 Advanced]
+🧩 Module 3: Assembly, Debugging & Advanced Tuning → Level 3.2: Test Case Assembly & State Sync [🟡 Intermediate]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. ⚡ The Concept (Ultra-Short)
-Local LLM gadi (truck) engine jam karke NaN (Not a Number) de raha hai. Uska X-Ray karke andar `JSONDecodeError` dhoondhna.
+Actual aur Expected dictionaries ko strictly typed `ToolCall` objects mein wrap karke final `LLMTestCase` lunchbox banana.
 
 2. 💥 Why? (Production Impact)
-- Ragas evaluate multi-threaded black box hai. `print()` commands kaam nahi ayengi (console bhar jayega).
-- Agar LLM strict JSON generate nahi kar paya toh dataset scorecard mein `NaN` chhap jayega aur execution silently fail hogi.
-- Bina Observability ke total token limit cross hone par DDoS overload ka alert kabhi nahi aayega.
+- Dictionaries loose data structures hain. Framework ko agar dict pass ki toh validation phase mein MissingRequiredArgument throw karega.
+- Cloud se data fetch karte waqt blank entries `None baseline` error deti hain jisse script crash hoti hai.
 
 3. 🎯 Practical Tasks (The Mission)
+  Task [1]: Loop laga kar apni extracted raw dictionaries ko DeepEval ki `ToolCall` class mein instantiate kar.
+  The Logic: Yeh Dynamic Wrap process hai jisse type-checking enforce hoti hai.
 
-  Task [1]: The X-Ray Switch
-  The Logic: Terminal mein explicitly 3 OS environment variables set kar (`TRACING_V2`, `API_KEY`, aur `PROJECT` naam). Yeh silently backend tracing on kar dega.
+  Task [2]: In `ToolCall` lists (expected aur actual) aur user query ko milakar ek final `LLMTestCase` instantiate kar.
+  The Logic: Yeh ultimate box hai jo metric engine directly consume karega.
 
-  Task [2]: The Heavy Execution
-  The Logic: Ragas ka main engine `evaluate()` trigger kar. Usko dataset, safe metrics, aur LLM wrapper de. Output ko ek variable mein daal.
-  💡 Hint Snippet (sirf samajhne ke liye — khud type karna, copy-paste forbidden!):
-  `result = evaluate(dataset=..., metrics=..., llm=...)`
-
-  Task [3]: Visualizing the Damage (Scorecard)
-  The Logic: Result object pe `to_pandas()` method chala kar usko dataframe mein convert kar aur uske `head()` se top 5 rows print kar. Notice kar kahan `NaN` pop up hua.
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Tracing variables lagao, `evaluate()` run karo (chahe error aane do), aur dataframe print karo. Ab LangSmith UI dashboard (browser) kholo.
-  > **Challenge:** Trace id identify karke andar tree mein jao. Dhoondho ki kya failure `JSONParsingFailure` ki wajah se hui hai? Aur is poore failed run ne actual mein kitne Tokens consume kiye?
+  💥 THE CHAOS TASK (Break it to Master it):
+  Cloud portal/dashboard pe ja aur kisi tool ka expected data intentionally blank chhod de. Ab script run kar. `NoneType object has no attribute` type ka **None baseline** error aayega! Tujhe realize hoga ki tera code cloud ke against out-of-sync hai. Isey fix karne ke liye pehle code mein `if e is None: continue` (error handling) laga, phir terminal pe jaake `dataset.push` (update) aur `dataset.pull` karke **State Synchronization** achieve kar. 
 
 4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- `evaluate()` run hoke Pandas Dataframe scorecard console mein dikhe jisme `NaN` visible ho (agar local model weak hai toh).
-- LangSmith UI mein "Token Consumption Tracking" aur error node reflect ho gaya ho.
-> 💬 **Quick Verify:** "Local models aksar Ragas evaluation mein 'NaN' kyun fekte hain (Hint: JSON kya role play karta hai)?"
+- 📤 Expected Output on Console: `weather_api` (object ke andar se property print karake dekh).
+- 🕵️‍♂️ Under The Hood Verification: Check kar ki `LLMTestCase` instantiate hone ke baad uske internal parameters strongly typed hain ya nahi.
+- 💬 Quick Verify 1 (Core Concept): "State Synchronization (Push/Pull) missing hone par test suites mein kya hota hai?"
+- 💬 Quick Verify 2 (Design): "Frameworks raw dictionaries ko directly accept kyun nahi karte?"
 
 5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **JSON Parsing Failure:** Ragas internal math JSON keys expect karta hai. Agar LLM normal text ("Here is the answer: {...}") bolega toh parser toot jayega.
-- **LangSmith Tracing:** `print()` debugging anti-pattern ka ilaj. Har token aur prompt ka step-by-step breakdown.
-- **Token Consumption Tracking:** Enterprise standard. Cost control aur infinite loop DDoS bachane ke liye crucial.
-> ⚠️ **Anti-Pattern:** Scorecard mein NaN dekh kar ignore karna ya average score extract kar lena. Sahi tarika: NaN ka matlab execution break, root cause trace karo aur LLM/JSON-mode fix karo.
+- **LLMTestCase & ToolCall:** Strict encapsulation and instantiation.
+- **State Synchronization:** Local code aur cloud dataset hamesha barabar hone chahiye.
+- ⚠️ **Anti-Pattern:** Dataset update karke local files me chhod dena (State sync break karna).
+- **Scalability Hook:** Badi teams mein "DataMapper" class banati hain jo data LLMTestCase mein dalne se pehle PII sanitize karti hai.
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧩 Module 3: Assembly, Debugging & Advanced Tuning → Level 3.3: Evaluation Execution & For-Loop Debugging [🟡 Intermediate]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ⚡ The Concept (Ultra-Short)
+Bulk API hit (evaluate) use karne ke bajaye, custom synchronous for-loop lagakar manual iteration se score calculate karna.
+
+2. 💥 Why? (Production Impact)
+- Hazaar test case ek saath LLM APIs par pel diye toh Rate Limiting (HTTP 429) aayega aur server down hoga.
+- Magic Strings (typos) hone par logic sahi hone ke bawajood tests fail hote hain (False Negatives).
+
+3. 🎯 Practical Tasks (The Mission)
+  Task [1]: Ek `for` loop setup kar jo `dataset.test_cases` par iterate kare. Har loop mein `metric.measure()` function call kar aur delay (`time.sleep`) laga.
+  The Logic: Yeh Manual Iteration hai. Delay API throttling (HTTP 429) se bachayega.
+
+  Task [2]: Measure chalne ke baad `tool_metric.score` ka state variable access kar aur usko read/print kar.
+  The Logic: Metric function seedha return nahi karta, woh apne object ka internal state update karta hai.
+
+  💥 THE CHAOS TASK (Break it to Master it):
+  Intentionally "String Mismatch" create kar. Expected dataset mein tool ka naam `multiply_numbers` likh aur agent se `Multiply` pass karwa. Score 0.0 aayega (False Negative) jabki usne kaam sahi kiya tha. Error pakad! Fir in hardcoded "Magic Strings" ko delete kar aur ek `Constants.py` (ENUM classes) bana. Uska use karke Exact String Match enforce kar.
+
+4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
+- 📤 Expected Output on Console: Executing Eval 0... Result Score: 1.0 (aur loop delay leke next print karega).
+- 🕵️‍♂️ Under The Hood Verification: Terminal logs mein HTTP 429 error gayab ho jana chahiye `time.sleep` lagane ke baad.
+- 💬 Quick Verify 1 (Core Concept): "Evaluation pipeline mein False Negative result kab produce hota hai?"
+- 💬 Quick Verify 2 (System): "Manual iteration loop default bulk evaluate API se better kab hota hai?"
+
+5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
+- **metric.measure:** Internal logic engine aur score updater.
+- **Rate Limiting:** APIs ko spam hone se rokna.
+- ⚠️ **Anti-Pattern:** Test case mein "Magic Strings" hardcode karna. Sahi tarika: Constants.py use kar.
+- **Scalability Hook:** Hazaar tests manually loop me slow honge. Production mein chunking aur `asyncio.gather()` lagake batch processing ki jati hai.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧩 Module 3: Assembly, Debugging & Advanced Tuning → Level 3.4: Advanced Metric Configurations & Bug Avoidance [🔴 Advanced]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ⚡ The Concept (Ultra-Short)
+Docs padhna chhor aur seedha metric ke `__init__` source code mein ghus kar hidden tuning parameters customize kar.
+
+2. 💥 Why? (Production Impact)
+- Security workflows mein kis chronological sequence mein tool chala, yeh jaan par ban aati hai. Order check kiye bina tests blindly pass ho jayenge.
+- Galti se galat flag on kiya toh internal bug system crash kar dega (RecursionError).
+
+3. 🎯 Practical Tasks (The Mission)
+  Task [1]: IDE navigation (`Cmd + Click`) se `ToolCorrectnessMetric` ki source file khol (site-packages mein). Padh usko, par modify mat karna (Supply Chain Rule). Apna Metric banate waqt wahan se `threshold` aur `strict_mode` flags pass kar.
+  The Logic: Hidden Kwargs ko control karke framework ko apne use-case ke hisaab se customize karna.
+
+  Task [2]: Security agent ke liye `should_consider_ordering=True` flag set kar aur `evaluation_params` ko limit kar taaki PII redaction ho.
+  The Logic: Yeh Array Index Mapping check karega. Agar AI ne tool sequence break ki toh fail hoga. Params limit karna PII ko external LLM judge ke paas jaane se rokta hai.
+
+  💥 THE CHAOS TASK (Break it to Master it):
+  Metric initialization ke andar galti se `verbose=True` pass kar de. Script run kar. Tere muh pe ek brutal **RecursionError: maximum recursion depth exceeded** padega! Tera system crash (internal DoS attack) ho jayega. Reason? Cyclical reference bug in the logger. Ab code wapas ja, verbose hata, aur verify kar ki deep configurations bina samjhe chhedna kitna khatarnak hai.
+
+4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
+- 📤 Expected Output on Console: `Metric Order Check: True`
+- 🕵️‍♂️ Under The Hood Verification: Test case ko galat order mein tool calls dekar measure kar. Ensure kar ki score drop ho (Scoring Penalty lag rahi hai chronological sequence fail hone pe).
+- 💬 Quick Verify 1 (Core Concept): "should_consider_ordering flag security workflows mein kya role ada karta hai?"
+- 💬 Quick Verify 2 (Danger): "IDE mein site-packages modify karna (Supply Chain Rule violation) allowed kyun nahi hai?"
+
+5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
+- **Source Code Inspection:** Documentations se aage badhkar class definitions explore karna.
+- **Chronological Sequence:** Array Index Mapping ke zariye strict ordering check.
+- ⚠️ **Anti-Pattern:** Library/package files ko directly edit karna. Hamesha initialization flags override kar.
+- **Scalability Hook:** `include_reasons=True` API costs exponentially bada deta hai. Production eval runs mein latency bachane ke liye isko False rakha jata hai.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🏁 MODULE 3 RECAP — Tera Status Report
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Siksha Summary:
-- Tune apne Ragas evaluation dataset ko mathematically correct Schema mein lock kar liya hai.
-- Tune strictly Triad metrics ko separate karke Authentication API Errors fix kar liye hain.
-- Tune Langchain ki Black Box observability (LangSmith) lagakar JSON Decode Errors aur Token footprint ka X-Ray kar liya hai.
+- Tune intermediate raw arrays ko safely parse aur scope mein limit karna seekha.
+- Actual aur Expected data ko `ToolCall` wrap karke `LLMTestCase` assemble kiya (with State Sync).
+- Rate limits aur Magic strings ko bypass karne ke liye Manual iteration (for-loop) setup kiya.
+- Source code inspect karke advanced flags tune kiye aur RecursionError jese brutal bugs ko handle kiya.
 
 Guru-ji's Warning:
-"Bhai, yeh advanced shit thi. Yahan aake aksar dev system band kar dete hain kyunki local LLM JSON errors deta hai aur OOM crash karta hai. Agar tune in errors ko traceback karna aur Langsmith dashboard pe trace tree check karna nahi seekha, toh aage Cloud AI par shift hokar bhi tu code maintain nahi kar payega. Dobara check kar ki NaN kaise aaya!"
+"Check kar le bhai! Kya tujhe yeh sab bina cheat sheet ke karna aa gaya hai? Aaj tune ek opaque AI ko transparent aur stable production pipeline mein convert kiya hai. Agar in config flags aur loops mein confidence loose lag raha hai, toh wapas ja aur dry-run kar. Real engineer deep dive karne se nahi darta!"
 
 ⚡ GURUDAKSHINA (The Checkpoint):
-"Dimag ki batti jali? Agar yahan tak poora clear hai toh terminal pe haath maar aur type kar 'CONTINUE' for the Final Module 4 (Jahan hum cloud shift karke Pandas data filter karenge aur production scale-up lagayenge)!"
-
-Abe aaur hai bhai! Picture abhi baaki hai. Maine pichle message mein specifically bola tha ki yeh Final Module 4 bacha hai jahan hum aag lagayenge. Cloud shift aur production scaling ke bina tera RAG system bas ek khilona hai. 
-
-Bheja fry mat kar, seedha terminal pe wapas aa. Aakhri aur sabse hardcore module pe attack karte hain!
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 4: Cloud Stability & Root-Cause Analysis → Level 4.1: GPT-4o Cloud Shift & VIP Guest Re-integration [🟡 Intermediate]
+"Sare Modules aur Levels clear hue? Mission Accomplished! Ab yeh code production mein aag lagane ke liye ready hai. Bhai, tera CTF Lab manual officially close hota hai. Ja, aur real-world mein AI ki bug-hunting kar!"
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. ⚡ The Concept (Ultra-Short)
-Local model ki JSON errors se bachne ke liye Cloud (GPT-4o) par shift ho, aur security ke saath purane hataye hue metrics wapas la.
-
-2. 💥 Why? (Production Impact)
-- Local models aksar JSON structure tod dete hain (Inference Instability), jisse NaN errors aate hain.
-- Agar galti se API key code mein hardcode kar di, toh GitHub pe push hote hi hazaron dollar ka bill aayega (API Leakage).
-- Bina OpenAI API ke tu `AnswerRelevance` check nahi kar sakta kyunki uski math OpenAI embeddings pe chalti hai.
-
-3. 🎯 Practical Tasks (The Mission)
-
-  Task [1]: Secret Management (The Vault)
-  The Logic: Apne root folder mein ek `.env` file bana aur usme `OPENAI_API_KEY` daal. Phir ek `.gitignore` file bana ke usme `.env` likh de taaki git use track na kare. Python mein `load_dotenv` function ko call kar taaki background mein key memory mein load ho jaye.
-
-  Task [2]: The Senior Examiner
-  The Logic: Ab local `ChatOllama` ko hata aur Langchain ka `ChatOpenAI` module initialize kar. Model parameter mein "gpt-4o" set kar. Dhyan rakh, tu key explicitly pass nahi karega, yeh line 8 (`load_dotenv`) se khud uthayega. Isko waise hi Ragas wrapper pehna jaise local model ko pehnaya tha.
-
-  Task [3]: VIP Guest Return
-  The Logic: Apne `safe_local_metrics` array ko discard kar. Ek naya `full_evaluation_suite` array bana jisme 4 purane metrics ke sath `AnswerRelevance` ko wapas inject kar de.
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Apne IDE/Jupyter ka "Kernel Restart" kar (Clean State banan zaroori hai taaki stale cache na rahe). Phir `load_dotenv` chala, `ChatOpenAI` wrapper bana, 5 metrics ka suite bana.
-  > **Challenge:** Code mein verify kar ki kya `os.environ` mein sach mein `OPENAI_API_KEY` load hui hai ya nahi (`in` operator use karke True/False print karwa). 
-
-4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- Script bina kisi AuthenticationError ke run ho aur bataye ki 5 metrics ready hain.
-- 📤 **Expected Output:** `OpenAI Key Loaded: True` aur `Total metrics in suite: 5`
-> 💬 **Quick Verify:** "AnswerRelevance metric ko explicitly OpenAI infrastructure (ya VIP Pass) ki zaroorat kyun padti hai?"
-
-5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **`load_dotenv` & `.env`:** Industry standard secret management. Hardcoding APIs is a strict anti-pattern.
-- **`ChatOpenAI`:** Massive scale aur stability deta hai. Ragas ab JSON format errors nahi dega.
-- **Clean State:** Purana local LLM memory se hatana zaroori hai warna configuration conflict hoga.
-> ⚠️ **Anti-Pattern:** Hardcoding API Key Anti-Pattern. Sahi tarika: Environment variables se injection.
-
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 4: Cloud Stability & Root-Cause Analysis → Level 4.2: Cloud Resource Profiling (The Bijli Meter) [🟡 Intermediate]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-1. ⚡ The Concept (Ultra-Short)
-Expressway (Cloud) par testing speed mast milegi, par toll-tax (cost) lagega. Isliye har run par token meter lagao.
-
-2. 💥 Why? (Production Impact)
-- Ragas evaluate bohot heavy context bhejta hai. Bina meter ke tumhara API Quota limits touch kar jayega aur production down ho jayegi.
-- LangSmith UI mein tokens dikhte hain, par code mein programmatically cost block lagane ke liye internal tracker chahiye.
-
-3. 🎯 Practical Tasks (The Mission)
-
-  Task [1]: The Meter Connection
-  The Logic: Langchain callbacks se `get_openai_callback` import kar. Yeh tumhara "bijli ka meter" hai.
-
-  Task [2]: Execution in Context
-  The Logic: `with get_openai_callback() as cb:` context manager use kar. Is `with` block ke bilkul andar apna `evaluate()` function call kar (full suite aur gpt-4o evaluator ke saath). Isse jo bhi network call jayegi, uska data `cb` mein store ho jayega.
-
-  Task [3]: Formatting the Invoice
-  The Logic: Jab evaluation result dictionary wapas aaye, toh directly print mat kar. Har metric ko securely bahar nikalne ke liye Python ka `.get('metric_name', 0)` use kar (taaki key na mile toh crash na ho). Phir `cb` object se `total_tokens` aur `total_cost` (USD) print karwa.
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Apna chhota mock dataset utha aur is poore cloud evaluation suite par meter lagakar execute kar.
-  > **Challenge:** Execution ke baad check kar ki kya total cost sach mein $0.0 se badi aayi hai? Apne output metrics aur invoice ko clearly alag sections mein print kar.
-
-4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- Console mein explicitly Total Tokens aur Exact API cost print ho.
-- 📤 **Expected Output:** `Total Tokens Consumed: [Some Number]` aur `API Bill Cost: $[Cost]`
-> 💬 **Quick Verify:** "Production me agar bill $1000 aane lage Ragas evaluation se, toh accuracy vs cost optimization ke liye kaunsa fallback LLM model use karega?"
-
-5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **`get_openai_callback`:** Har HTTP request headers se explicitly metadata nikalta hai token tracking ke liye.
-- **`.get('key', fallback)`:** Dictionary se properties nikalne ka safe tarika jisse `KeyError` nahi aata agar metric internally fail ho gayi ho.
-- **OpenAI Enterprise DPA:** Private data cloud par ja raha hai, toh "Zero Data Retention" policy ensure karna zaroori hai.
-> ⚠️ **Anti-Pattern:** Evaluator (GPT-4o) par doubt karna agar marks kam aayein. Sahi tarika: Generator LLM ke prompt ko theek kar (Generator Fine-Tuning Action), examiner ki galti mat nikal.
-
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧩 Module 4: Cloud Stability & Root-Cause Analysis → Level 4.3: Pandas Tabular Analysis & GIGO Filtering [🔴 Advanced]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-1. ⚡ The Concept (Ultra-Short)
-Nested Ragas dictionary (ganda data) ko Pandas Dataframe (Supermarket receipt) mein convert karke failures ko filter karna.
-
-2. 💥 Why? (Production Impact)
-- 1000 questions ki nested dictionary padhna insaan ke bas ki baat nahi hai. (Garbage In Garbage Out situation).
-- Bina Root-cause analysis ke JIRA tickets assign nahi ho payenge ki failure Database layer (Context Mismatch) ki thi ya LLM hallucination ki.
-- Agar poora dataframe ek baar mein print kiya, toh terminal buffer phat jayega aur IDE crash ho jayega.
-
-3. 🎯 Practical Tasks (The Mission)
-
-  Task [1]: Tabular Conversion & Sanity Check
-  The Logic: Ragas `result` object par ek built-in method call kar jo usko automatically Pandas dataframe mein convert kar de. Uske baad console phatne se bachane ke liye sirf dataframe ka top 5 rows (head) print kar.
-
-  Task [2]: Boolean Filtering (Isolating the Failures)
-  The Logic: Dataframe ke upar ek filter laga taaki sirf wahi rows alag variables mein save hon jahan `context_recall` explicitly 0.5 se kam (fail) ho. Is array ka naam `failed_query` rakh.
-
-  Task [3]: Null Tracing
-  The Logic: Check kar ki execution ke baad bhi agar koi row NaN ho gayi thi toh kitni baar hui. Dataframe ka `.isna().sum()` method use kar.
-
-  🔥 THE COMBO TASK:
-  > 🔥 **Combo Task:** Ragas result ko dataframe bana, `failed_query` variable mein filter laga kar specifically un rows ke sirf 3 columns print kar: `'user_input'`, `'context_recall'`, aur `'faithfulness'`.
-  > **Challenge:** Data dekh kar bata ki agar Recall 0 aaya, toh Faithfulness ka score kaisa behave kar raha hai? (Is concept ko Metrics Chain Reaction bolte hain).
-
-4. ✅ Definition of Done ("Kaise pata chalega ki sahi hua?")
-- Table properly filtered output dikhaye jisme sirf fail hue questions bahar aayein.
-- 📤 **Expected Output:** Dataframe with columns and values, clearly formatted on the terminal.
-> 💬 **Quick Verify:** "Answer Relevance Illusion kya bimari hai aur uspar explicitly bharosa kyu nahi karna chahiye?"
-
-5. 🧠 Practical Takeaway (Asli Siksha — The Deep Dive)
-- **`to_pandas()`:** Human readability aur Business Intelligence (BI) tools (jaise Tableau) mein export karne ke liye sabse important function.
-- **Root-Cause Analysis:** DataFrame filtering se seedha point point error milta hai (e.g. Scraper ne website footer utha liya).
-- **Metrics Chain Reaction:** Context Recall girega -> Retriever fail hoga -> LLM hallucinate karega -> Faithfulness girega.
-> ⚠️ **Anti-Pattern:** Massive Dataframe Print Anti-Pattern (`print(df)` bina limits ke). Sahi tarika: Hamesha `df.head()` ya `df.tail()` use kar.
-
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🏁 MODULE 4 RECAP — Tera Status Report (GRAND FINALE)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Siksha Summary:
-- Tune apna evaluation secure `.env` methods ke sath Cloud (GPT-4o) par migrate kar liya hai.
-- Tune execution stability gain kar li hai aur "Bijli ka meter" lagakar token cost effectively profile kar liya hai.
-- Tune data ko Pandas array mein flatten karke enterprise-level failed-query analysis successfully achieve kar liya hai.
-
-Guru-ji's Warning:
-"Bhai, khatam! Tune pura pipeline apne haathon se bana diya hai — Ingestion se leke Cloud LLM-as-a-judge evaluation aur data filtering tak. Ab yeh CTF Lab teri mutthi mein hai. 
-Ek aakhri baat dimag mein chipka le: RAG is easy to build, but incredibly hard to get right in production. Ragas metrics hamesha tera aaina (mirror) rahenge. Jab error aaye toh rote hue rona nahi, DataFrame check kar, LangSmith ka X-Ray khol, aur galti theek kar!"
-
-⚡ GURUDAKSHINA (The Final Checkpoint):
-Bhai, mera kaam yahan khatam hota hai. Jaa, is poore knowledge ko real terminal pe aag laga ke aa. Agar koi aur module uthana hai future mein, toh naye notes ke saath wapas aana. Dismissed!
-
-==================================================================================
